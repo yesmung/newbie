@@ -1,0 +1,11 @@
+*.asm
+*.exe
+*.obj
+*.opensdf
+*.sdf
+*.sln
+*.v12
+*.vcxproj
+*.c
+*.h
+Debug/*
