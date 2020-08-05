@@ -1,0 +1,6 @@
+{
+    "company": "COMPANY",
+    "date": "01/01/2000",
+    "address": "detected adress",
+    "total": "100.34"
+}
