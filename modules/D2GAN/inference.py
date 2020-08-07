@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# CUDA_VISIBLE_DEVICES=1 python inference.py -c ./configs/config-inference.json
+# CUDA_VISIBLE_DEVICES=1 python inference.py -c ./configs/config_inference.json
 
 from __future__ absolute_import, division, print_function, unicode_literals
 
@@ -25,6 +25,7 @@ def main():
 
 	# MODEL 생성
 	print("Load the model")
+	model = DetectionModel(config)
 
 	# PREDICT
 	print("Perform predictions and save to DB")
