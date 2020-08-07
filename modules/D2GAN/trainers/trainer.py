@@ -3,7 +3,7 @@
 from base.base_trainer import BaseTrain
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckPoint, TensorBoard
 
-improt os
+import os
 
 #mlflow lib
 import mlflow
