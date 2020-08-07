@@ -100,7 +100,7 @@ class Trainer(BaseTrain):
 			imgs_lr, imgs_hr = next(dataset_train)
 
 			# From low res. image generate high res. version
-			fake_hr = self.model.generator.predict(imgs_hr)
+			fake_hr = self.model.generator.predict(imgs_lr)
 
 			valid = np.ones((batch_size,) + self.disc_patch)
 			fake = np.zeors((batch_size,) + self.disc_patch)
