@@ -190,7 +190,6 @@ class DataLoader(BaseDataLoader):
 
 			return tf.data.Dataset.from_tensor_slices((imgs, coods)).map(preprocess, num_parallel_calls=tf.data.experimental.AUTOTUNE).batch(batch_size).prefetch(
 				tf.data.experimental.AUTOTUNE)
-		
 		print('... make tf data : train')
 		dataset_train = make_tfdataset(img_input_s[0], img_target_s[0])
 		print('... make tf data : valid')
