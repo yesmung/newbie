@@ -84,7 +84,7 @@ class DataLoader(BaseDataLoader):
 		name = self.config.META_DB.name
 
 		list_db_name, list_db_ref, list_db_env = get_dbs_from_meta_db(env=db_meta)
-		envsm_main = get_env_summary(db_metam prefix='__meta__/')
+		envsm_main = get_env_summary(db_meta, prefix='__meta__/')
 		mlflow.log_params(envsm_main)
 		mlflow.log_params('__meta__/-','-'*200)
 
