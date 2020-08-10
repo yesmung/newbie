@@ -1,0 +1,49 @@
+{
+	"exp":{
+		"name": "table ner model"
+	},
+	"MLFLOW":{
+		"module_name":"TABLE_CAT",
+		"exp_name":"[DK] table_ner model, lstm+cnn",
+		"MAIN_URI":""
+	},
+	"META_DB":{
+		"load_existing_meta_db": false,
+		"name":"tablecat_1",
+		"path":"/media/myungsungkwak/msdisk/temp/",
+		"log":"/info.txt",
+		"description":"table ner meta db",
+		"dblist":"tablener_data1",
+		"DB_MAIN_PATH":""
+	},
+	"data":{
+		"max_len": 15,
+		"num_categories": "수가명,코드,시간,숫자,병원명,표제,사람이름,문서명,주소,진료과명",
+		"use_tokenizer": true,
+		"tokenizer_path":"/media/myungsung/msdisk/MLFLOW_SQLITE/artifacts/tokenizer/tokenizer.json"
+	},
+	"model":{
+		"name":"model.Model",
+		"pretrained_model_path":"",
+		"weight_path":"",
+		"use_pretrained":false,
+		"optimizer":"Adam"
+	},
+	"trainer":{
+		"name":"trainer.Trainer",
+		"num_epochs":500,
+		"num_steps":100,
+		"batch_size":128,
+		"train_valid_ratio":0.7,
+		"verbose_training":true
+	},
+	"callbacks":{
+		"checkpoint_dir":"",
+		"checkpoint_monitor":"val_loss",
+		"checkpoint_mode":"min",
+		"checkpoint_save_best_only":false,
+		"checkpoint_save_weights_only":false,
+		"checkpoint_verbose":2,
+		"tensorboard_write_graph":false
+	}
+}

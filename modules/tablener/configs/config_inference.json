@@ -1,0 +1,56 @@
+{
+	"exp":{
+		"name": "inference tablener"
+	},
+	"MLFLOW":{
+		"module_name":"None",
+		"exp_name":"",
+		"MAIN_URI":""
+	},
+	"META_DB":{
+		"load_existing_meta_db": false,
+		"name":"inference_tablener3",
+		"path":"/media/myungsungkwak/msdisk/temp/",
+		"log":"/info.txt",
+		"description":"charsort model을 위한 meta data db",
+		"dblist":"test0629_denoisingGAN",
+		"target_prefix":"word",
+		"DB_MAIN_PATH":""
+	},
+	"data":{
+		"max_len": 15,
+		"num_categories": "수가명,코드,시간,숫자,병원명,표제,사람이름,문서명,주소,진료과명",
+		"use_tokenizer": true,
+		"tokenizer_path":"/media/myungsung/msdisk/MLFLOW_SQLITE/artifacts/tokenizer/tokenizer.json"
+	},
+	"model":{
+		"name":"model.Model",
+		"pretrained_model_path":"/media/myungsung/msdisk/MLFLOW_SQLITE/tablecat_1/best_modelmodel.h5",
+		"weight_path":"",
+		"use_pretrained":true,
+		"optimizer":"Adam"
+	},
+	"trainer":{
+		"name":"trainer.Trainer",
+		"num_epochs":100,
+		"num_steps":100,
+		"batch_size":63,
+		"train_valid_ratio":0.7,
+		"verbose_training":true
+	},
+	"callbacks":{
+		"checkpoint_dir":"",
+		"checkpoint_monitor":"val_loss",
+		"checkpoint_mode":"min",
+		"checkpoint_save_best_only":false,
+		"checkpoint_save_weights_only":false,
+		"checkpoint_verbose":2,
+		"tensorboard_write_graph":false
+	},
+	"inference":{
+		"create_new_data_db": false,
+		"data_db_path": "/SAM/jupyter/DK/DB/",
+		"data_db_name": "test0629_denoisingGAN",
+		"data_db_description": "tablener module inference data db"
+	}
+}
