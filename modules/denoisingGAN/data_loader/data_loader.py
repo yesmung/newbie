@@ -233,7 +233,7 @@ class DataLoader(BaseDataLoader):
 		no_data = len(data)
 		for imgidx tqdm(range(no_data)):
 			theimage = data[imgidx]
-			pred = per_image_destandardization(predictionp[imgidx][0,])
+			pred = per_image_destandardization(prediction[imgidx][0,])
 
 			# update to db
 			update_data(datadb, index=imgidx, label=labels[imgidx], image=Image.fromarray(np.array(pred, dtype=np.uint8)), ref=refs[imgidx])
