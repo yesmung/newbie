@@ -330,7 +330,8 @@ def get_db_by_name(env=None, db_name=None):
 
 
 def read_bulk_data_from_db(env=None, prefix=None, db_name='db_data'):
-    db = env.open_db(str(db_name).encode())
+    # db = env.open_db(str(db_name).encode())
+    db = env.open_db(b'db_data')
     list_data = []
 
     try:
@@ -345,6 +346,7 @@ def read_bulk_data_from_db(env=None, prefix=None, db_name='db_data'):
     with env.begin(write=False) as txn:
         for key, value in txn.cursor(db):
             key = key.decode()
+
             if key.startswith('img'):
                 if key[0:5] == 'img_c':
                     if prefix == 'img_c':
@@ -352,57 +354,69 @@ def read_bulk_data_from_db(env=None, prefix=None, db_name='db_data'):
                         buf.write(value)
                         buf.seek(0)
                         value = Image.open(buf).convert('RGB')
+                        list_data.append(value)
                 elif key[0:5] == 'img_w':
                     if prefix == 'img_w':
                         buf = six.BytesIO()
                         buf.write(value)
                         buf.seek(0)
                         value = Image.open(buf).convert('RGB')
+                        list_data.append(value)
                 else:
                     if prefix == 'img':
                         buf = six.BytesIO()
                         buf.write(value)
                         buf.seek(0)
                         value = Image.open(buf).convert('RGB')
+                        list_data.append(value)
 
             elif key.startswith('char'):
                 if key[0:6] == 'char_c':
                     if prefix == "char_c":
                         value = decode_pd(value, sep=sep)
+                        list_data.append(value)
 
                 elif key[0:6] == 'char_i':
                     if prefix == "char_i":
                         value = decode_list(value, sep=sep)
+                        list_data.append(value)
                 else:
                     if prefix == 'char':
                         value = decode_list(value, sep=sep)
+                        list_data.append(value)
 
             elif key.startswith('word'):
                 if key[0:6] == 'word_c':
                     if prefix == "word_c":
                         value = decode_pd(value, sep=sep)
+                        list_data.append(value)
                 elif key[0:6] == 'word_i':
                     if prefix == "word_i":
                         value = decode_list(value, sep=sep)
+                        list_data.append(value)
                 elif key[0:6] == 'word_n':
                     if prefix == "word_ner":
                         value = decode_list(value, sep=sep)
+                        list_data.append(value)
                 else:
                     if prefix == 'word':
                         value = decode_list(value, sep=sep)
+                        list_data.append(value)
 
             elif key.startswith('table'):
                 if prefix == 'table':
                     value = decode_pdlist(value, sep=sep)
+                    list_data.append(value)
 
             elif key.startswith('db'):
                 if prefix == 'db':
                     value = decode_pdlist(value, sep=sep)
+                    list_data.append(value)
 
             else:
                 if key.startswith(prefix):
                     value = value.decode("utf-8")
-            list_data.append(value)
+                    list_data.append(value)
 
     return list_data
 
