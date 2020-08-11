@@ -5,7 +5,7 @@ db_util.py
 
 def write_cache_to_env(env, cache):
     with env.begin(write=True) as txn:
-        for k, v in cache.item():
+        for k, v in cache.items():
             txn.put(k, v)
 
 
@@ -23,7 +23,7 @@ def remove_db_from_evn(env, db_name):
 def write_cache_to_db(env, db, cache):
     with env.begin(write=True) as txn:
         db_cs = txn.cursor(db)
-        for k, v in cache.item():
+        for k, v in cache.items():
             db_cs.put(k, v)
 
 

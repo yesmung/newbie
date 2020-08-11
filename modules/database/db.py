@@ -236,7 +236,7 @@ def update_data(env, index=None, label='', image=None, text=None, ref='', char=N
             ckey = 'img_c-%09d-%09d' % (index, ci)
             cache[str(ckey).encode()] = temp.getvalue()
 
-    write_cache_to_env(env, cache)
+    write_cache_to_db(env, db_data, cache)
 
     return env
 
