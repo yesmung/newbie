@@ -15,7 +15,7 @@ import csv
 from multiprocessing import Process, Queue
 import pickle
 
-from .db_util import *
+from db_util import *
 
 MAP_SIZE = 1e+9
 MAX_DB = 100
