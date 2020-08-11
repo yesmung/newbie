@@ -1,0 +1,68 @@
+{
+  "exp": {
+    "name": "addition2_5_usecharonly",
+    "path": "/SAM/jupyter/DK/temp/"
+  },
+  "MLFLOW": {
+    "module_name": "RECOG_USECASE",
+    "exp_name":"[DK] addition2_5, space, usecharonly",
+    "MAIN_URI": ""
+  },
+  "META_DB": {
+    "load_existing_mete_db": false,
+    "name": "recog_usecase_addition2_25",
+    "path": "/SAM/jupyter/DK/temp/",
+    "log": "/info.txt",
+    "description": "recognition test meta data db",
+    "dblist": "recog_usecaseonlyWSPACE_1,recog_usecaseonlyWSPACE_2,recog_usecaseonlyWSPACE_3",
+    "batch_ratio": "0.5,0.25,0.25",
+    "dbvalid": "recog_usecaseonly_test_merge_addition2",
+    "DB_MAIN_PATH": ""
+  },
+  "model": {
+    "name": "model.Model",
+    "weight_path": "",
+    "use_pretrained": true,
+    "pretrained_model_path": "/media/myungsung/msdisk/MLFLOW_SQLITE/artifacts/model/data/best_accuracy/model.h5",
+    "transformation": "None",
+    "featureExtraction": "ResNet",
+    "sequenceModeling": "BiLSTM",
+    "prediction": "Attn",
+    "num_fiducial": 20,
+    "fe_input_channel": 1,
+    "fe_output_channel": 512,
+    "bl_hidden_size": 256,
+    "optimizer": "adam",
+    "learning_rate": 1.0,
+    "beta1": 0.9,
+    "rho": 0.95,
+    "eps": 1e-8,
+    "grad_clip": 5,
+    "gpu": true
+  },
+  "trainer":{
+    "name": "trainer.Trainer",
+    "num_epochs": 100000,
+    "num_steps": 100,
+    "batch_size": 128,
+    "train_valid_ratio": 0.7,
+    "valid_interval": 600,
+    "verbose_training": true
+  },
+  "callbacks":{
+    "checkpoint_monitor": "val_loss",
+    "checkpoint_mode": "min",
+    "checkpoint_save_best_only": false,
+    "checkpoint_save_weights_only": false,
+    "checkpoint_verbose": false,
+    "tensorboard_write_graph": false
+  },
+  "data": {
+    "image_size_h": 36,
+    "image_size_w": 288,
+    "batch_max_length": 40,
+    "num_reading_workers": 0,
+    "PAD": true,
+    "character": "usecase1"
+  }
+}

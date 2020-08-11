@@ -1,0 +1,68 @@
+{
+  "exp": {
+    "name": "recog_inference_test223",
+    "path": "/SAM/jupyter/DK/test/"
+  },
+  "MLFLOW": {
+    "module_name": "None",
+    "exp_name":"",
+    "MAIN_URI": ""
+  },
+  "META_DB": {
+    "load_existing_mete_db": false,
+    "name": "inference_recog_test242",
+    "path": "/SAM/jupyter/DK/temp/",
+    "log": "/info.txt",
+    "description": "recognition inference test meta data db",
+    "dblist": "test0629_denosingGAN",
+    "target_prefix": "word_c",
+    "dbvalid": "",
+    "DB_MAIN_PATH": ""
+  },
+  "model": {
+    "name": "model.Model",
+    "weight_path": "",
+    "use_pretrained": true,
+    "pretrained_model_path": "/media/myungsung/msdisk/MLFLOW_SQLITE/artifacts/model/data/best_accuracy/model.h5",
+    "transformation": "None",
+    "featureExtraction": "ResNet",
+    "sequenceModeling": "BiLSTM",
+    "prediction": "Attn",
+    "num_fiducial": 20,
+    "fe_input_channel": 1,
+    "fe_output_channel": 512,
+    "bl_hidden_size": 256,
+    "optimizer": "adam",
+    "learning_rate": 1.0,
+    "beta1": 0.9,
+    "rho": 0.95,
+    "eps": 1e-8,
+    "grad_clip": 5,
+    "gpu": true
+  },
+  "callbacks":{
+    "checkpoint_monitor": "val_loss",
+    "checkpoint_mode": "min",
+    "checkpoint_save_best_only": false,
+    "checkpoint_save_weights_only": false,
+    "checkpoint_verbose": false,
+    "tensorboard_write_graph": false
+  },
+  "data": {
+    "image_size_h": 36,
+    "image_size_w": 288,
+    "batch_max_length": 25,
+    "num_reading_workers": 0,
+    "PAD": true,
+    "character": "usecase1"
+  },
+  "inference": {
+    "create_new_data_db": false,
+    "data_db_path": "/SAM/jupyter/DK/DB/",
+    "data_db_name": "test0629_denoisingGAN",
+    "data_db_description": "recognition module inference test data db",
+    "save_prefix": "word",
+    "create_preview_data_db": true,
+    "preview_db_postfix": "_preview_detection"
+  }
+}
