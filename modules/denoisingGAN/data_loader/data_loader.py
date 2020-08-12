@@ -231,7 +231,7 @@ class DataLoader(BaseDataLoader):
 
 		# db 에 data 저장
 		no_data = len(data)
-		for imgidx tqdm(range(no_data)):
+		for imgidx in tqdm(range(no_data)):
 			theimage = data[imgidx]
 			pred = per_image_destandardization(prediction[imgidx][0,])
 
