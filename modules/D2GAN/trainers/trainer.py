@@ -190,7 +190,10 @@ class Trainer(BaseTrain):
 				axs[row, col].axis('off')
 			cnt += 1
 		fig.savefig(spath+"images/%s/%08d.png" % (self.dataset_name, epoch))
+		plt.close()
 
+		mlflow.ActiveRun(self.config.mlrun)
+		mlflow.log_artifact(spath+"images/%s/%08d.png" % (self.dataset_name, epoch), "validation_images")
 		"""
 		# Save low resolution images for comparision
 		for i in range(r):
