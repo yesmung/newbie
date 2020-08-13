@@ -52,7 +52,7 @@ class Trainer(BaseTrain):
 
     def init_callbacks(self):
         self.callbacks.append(
-            ModelCheckPoint(
+            ModelCheckpoint(
                 filepath=os.path.join(self.config.callbacks.checkpoint_dir, '%s-{epoch:02d}-{val_loss:.2f}.ckpt' % self.config.exp.name),
                 monitor=self.config.callbacks.checkpoint_monitor,
                 mode=self.config.callbacks.checkpoint_mode,

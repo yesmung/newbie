@@ -31,9 +31,9 @@ from PIL import Image
 from tqdm import tqdm
 
 # from craft-keras
-from detection_D2GAN.utils import tools
-from detection_D2GAN.utils import image_utils
-from detection_D2GAN.utils.image_utils import drawBoxes
+from utils import tools
+from utils import image_utils
+from utils.image_utils import drawBoxes
 
 sys.path.append('/media/myungsungkwak/msdisk/docrv2_sroie/modules/database')
 from db_util import *

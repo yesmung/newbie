@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from base.base_trainer import BaseTrain
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckPoint, TensorBoard
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 
 import os
 
@@ -37,7 +37,7 @@ class Trainer(BaseTrain):
 
 	def init_callbacks(self):
 		self.callbacks.append(
-			ModelCheckPoint(
+			ModelCheckpoint(
 				filepath = os.path.join(self.config.callbacks.checkpoint_dir, '%s-{epoch:02d}-{val_loss:.2f}.ckpt' % self.config.exp.name),
 				monitor = self.config.callbacks.checkpoint_monitor,
 				mode = self.config.callbacks.checkpoint_mode,

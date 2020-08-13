@@ -42,7 +42,7 @@ def getKeyValuePair(dic, master_dic={}, master_key=None):
 			if master_key == None:
 				master_dic[key] = dic[key]
 			else:
-				master_dic['Config.'+str(master_key)+'.'+str(key)] = dict[key]
+				master_dic['Config.'+str(master_key)+'.'+str(key)] = dic[key]
 	return master_dic
 
 def optTransplator(config):

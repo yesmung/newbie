@@ -20,9 +20,9 @@ from db_util import *
 from db import *
 
 from base.base_data_loader import BaseDataLoader
-from D2GAN.utils import dirs
-from D2GAN.utils import image_utils
-from D2GAN.utils.image_utils import drawBoxes
+from utils import dirs
+from utils import image_utils
+from utils.image_utils import drawBoxes
 
 
 DB_MAIN_PATH = '/SAM/jupyter/DK/DB/db_main'

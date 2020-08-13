@@ -3,8 +3,8 @@
 #mlflow lib
 import mlflow
 import mlflow.keras
-MLFLOW_URL = 'sqlite:///home/blabla/mlflow.db'
-artifact_path = '/media/myungsung/msdisk/MLFLOW_SQLITE/'
+MLFLOW_URI = 'sqlite:////media/myungsungkwak/msdisk/mlflow_data/mlflow.db'
+artifact_path = '/media/myungsungkwak/msdisk/MLFLOW_SQLITE/'
 
 def start_mlflow(config):
 	mf_experimentname = config.MLFLOW.module_name
