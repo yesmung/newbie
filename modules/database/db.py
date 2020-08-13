@@ -19,7 +19,7 @@ from db_util import *
 
 MAP_SIZE = 1e+9
 MAX_DB = 100
-DB_BASE = './DB/'
+DB_BASE = '/home/dk/docr2/DB/'
 DB_MAIN_PATH= DB_BASE + 'db_main'
 MLFLOW_URI = './MLFLOW/'
 
@@ -880,7 +880,7 @@ def refresh_main_db(main_db_path=DB_BASE+'*'):
             try:
                 data_db = open_env_read(dbname)
                 register_db(db=open_env(dbname))
-                dblist.append(os.apth.basename(dbname))
+                dblist.append(os.path.basename(dbname))
             except:
                 print('--- no data exist from file system --- '+dbname)
                 unregister_db(db_name=os.path.basename(dbname))
