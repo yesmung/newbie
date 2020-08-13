@@ -46,7 +46,7 @@
     "num_steps": 100,
     "batch_size": 16,
     "train_valid_ratio": 0.7,
-    "valid_interval": 100,
+    "valid_interval": 500,
     "verbose_training": true
   },
   "callbacks":{
