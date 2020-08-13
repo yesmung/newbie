@@ -1,35 +1,38 @@
 # -*- coding: utf-8 -*-
 
-#mlflow lib
+# mlflow lib
 import mlflow
-import mlflow.keras
+import mlflow.tensorflow
+
 MLFLOW_URI = 'sqlite:////media/myungsungkwak/msdisk/mlflow_data/mlflow.db'
 artifact_path = '/media/myungsungkwak/msdisk/MLFLOW_SQLITE/'
 
+# Enable auto-logging to MLflow to capture TensorBoard metrics.
+mlflow.tensorflow.autolog(1)
+
 def start_mlflow(config):
-	mf_experimentname = config.MLFLOW.module_name
-	mf_tracking_name = config.MLFLOW.exp_name
+    # try:
+    mf_experimentname = config.MLFLOW.module_name
+    mf_tracking_name = config.MLFLOW.exp_name
 
-	mf_trackinguri = config.MLFLOW.MAIN_URI
-	if mf_trackinguri == "":
-		mf_trackinguri = MLFLOW_URI
+    mf_trackinguri = config.MLFLOW.MAIN_URI
+    if mf_trackinguri == "":
+        mf_trackinguri = MLFLOW_URI
 
-	mlflow.set_tracking_uri(mf_trackinguri)
+    mlflow.set_tracking_uri(mf_trackinguri)
+    try:
+        mlflow.create_experiment(mf_experimentname, artifact_location=artifact_path)
+    except:
+        print('experiment exist')
+    mlflow.set_experiment(mf_experimentname)
 
-	try:
-		mlflow.create_expermiment(mf_experimentname, artifact_location=artifact_path)
-	except:
-		print('experiment exist')
+    mlrun = mlflow.start_run(run_name=mf_tracking_name)
 
-	mlflow.set_experiment(mf_experimentname)
+    mlflow.set_tag('config_summary', config.json_string)
+    mlflow.log_artifact(config.json_file)
+    mlflow.log_params(config.dict)
 
-	mlrun = mlflow.start_run(run_name=mf_tracking_name)
+    config.mlrun = mlrun
+    config.MLFLOW.artifact_path = artifact_path
 
-	mlflow.set_tag('config_summary', config.json_string)
-	mlflow.log_artifact(config.json_file)
-	mlflow.log_params(config.dict)
-
-	config.mlrun = mlrun
-	config.MLFLOW.artifact_path = artifact_path
-
-	return config
+    return config
