@@ -259,7 +259,7 @@ class Trainer(BaseTrain):
                     valid_log = f' accuracy: {current_accuracy:0.3f}, norm_ED: {current_norm_ED:0.2f}'
                     print(valid_log)
                     mlflow.log_metrics({'valid_loss':np.double(valid_loss), 'accuracy':np.double(current_accuracy), 'norm_ED':np.double(current_norm_ED)}, step=i)
-                    log.write(valid_log, + '\n')
+                    log.write(valid_log + '\n')
 
                     # keep best accuracy model
                     if current_accuracy > best_accuracy:

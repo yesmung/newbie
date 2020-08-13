@@ -18,7 +18,7 @@ import pickle
 from db_util import *
 
 MAP_SIZE = 1e+9
-MAX_DB = 100
+MAX_DB = 10000
 DB_BASE = '/home/dk/docr2/DB/'
 DB_MAIN_PATH= DB_BASE + 'db_main'
 MLFLOW_URI = './MLFLOW/'
@@ -692,11 +692,13 @@ def print_db_summary(env=None, db_name=None, save=False, save_path='', wmode='a'
 
 
 def get_db_summary(env=None, db_name=None, prefix=''):
+    """
     if db_name is None:
         db = env.open_db(b'db_data')
     else:
         db = env.open_db(str(db_name).encode())
-
+    """
+    db = env.open_db(b'db_data')
     with env.begin(write=False) as txn:
         keylist = [key.decode('utf-8') for key, _ in txn.cursor(db)]
 

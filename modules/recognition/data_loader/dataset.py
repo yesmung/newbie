@@ -124,7 +124,7 @@ class LmdbDataset(Dataset):
 
         self.root = root
         self.opt = opt
-        self.env = lmdb.open(root, max_readers=32, readonly=True, lock=False, readahead=False, meminit=False)
+        self.env = lmdb.open(root, max_readers=32, max_dbs=1000, readonly=True, lock=False, readahead=False, meminit=False)
         if not self.env:
             print('cannot create lmdb from %s' % (root))
             sys.exit(0)
@@ -145,9 +145,9 @@ class LmdbDataset(Dataset):
         with self.env.begin(write=False).cursor(db) as txn:
             label_key = 'text-%09d'.encode() % index
             label = txn.get(label_key).decode()
-            label = label.replace(' ','')
+            #label = label.replace(' ','')
 
-            img_key = 'image-%09d'.encode() % index
+            img_key = 'img-%09d'.encode() % index
             imgbuf = txn.get(img_key)
 
             buf = six.BytesIO()

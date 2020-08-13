@@ -92,8 +92,8 @@ def optTransplator(config):
 	if config.model.optimizer == 'Adam':
 		opt.adam = True
 	if config.data.character == 'usecase1':
-		opt.character = """"Q"""
+		opt.character = """!@#$%^&*()+,.\=-*/?0123456789:;[]{}|ABCDEFGHIJKLMNOPQRSTUVWXYZ'"abcdefghijklmnopqrstuvwxyz """
 	elif config.data.character == 'default':
-		opt.character = """\t !"!@#$%^&*()+,.\-*/?0123456789:;[]{}|ABCDEFGHIJKLMNOPQRSTUVWXYZ'abcdefghijklmnopqrstuvwxyz"""
+		opt.character = """!@#$%^&*()+,.\-*/?0123456789:;[]{}|ABCDEFGHIJKLMNOPQRSTUVWXYZ'"abcdefghijklmnopqrstuvwxyz ="""
 
 	return opt, config

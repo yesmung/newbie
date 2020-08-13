@@ -40,6 +40,7 @@ class DataLoader(BaseDataLoader):
         # load meta db
         if self.config.META_DB.load_existing_meta_db is False:
             db_meta = create_meta_db(path=path, name=name, description=description)
+
             db_list_string = self.config.META_DB.dblist
             db_list = db_list_string.split(',')
 

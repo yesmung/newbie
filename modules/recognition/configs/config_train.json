@@ -9,8 +9,8 @@
     "MAIN_URI": ""
   },
   "META_DB": {
-    "load_existing_mete_db": false,
-    "name": "recog_test_1",
+    "load_existing_meta_db": false,
+    "name": "recog_test_2",
     "path": "/home/dk/docr2/temp/",
     "log": "/info.txt",
     "description": "recognition test meta data db",
@@ -63,6 +63,6 @@
     "batch_max_length": 40,
     "num_reading_workers": 0,
     "PAD": true,
-    "character": "usecase1"
+    "character": "default"
   }
 }
