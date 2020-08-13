@@ -42,9 +42,9 @@
   },
   "trainer":{
     "name": "trainer.Trainer",
-    "num_epochs": 100000,
+    "num_epochs": 10000,
     "num_steps": 100,
-    "batch_size": 128,
+    "batch_size": 64,
     "train_valid_ratio": 0.7,
     "valid_interval": 600,
     "verbose_training": true
