@@ -42,7 +42,7 @@
   },
   "trainer":{
     "name": "trainer.Trainer",
-    "num_epochs": 10000,
+    "num_epochs": 100000,
     "num_steps": 100,
     "batch_size": 16,
     "train_valid_ratio": 0.7,
@@ -60,7 +60,7 @@
   "data": {
     "image_size_h": 48,
     "image_size_w": 512,
-    "batch_max_length": 50,
+    "batch_max_length": 100,
     "num_reading_workers": 0,
     "PAD": true,
     "character": "default"
