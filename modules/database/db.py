@@ -14,14 +14,18 @@ import pandas as pd
 import csv
 from multiprocessing import Process, Queue
 import pickle
-
 from db_util import *
 
+from configparser import ConfigParser
+path_config_file = os.getcwd().split('docrv2_sroie')[0] + 'docrv2_sroie/' + 'config.ini'
+common_variable = ConfigParser()
+common_variable.read(path_config_file)
+
+DB_BASE = common_variable['database']['DB_BASE']
+DB_MAIN_PATH = DB_BASE + 'db_main'
+MLFLOW_URI = common_variable['database']['MLFLOW_URI']
 MAP_SIZE = 1e+9
-MAX_DB = 10000
-DB_BASE = '/home/dk/docr2/DB/'
-DB_MAIN_PATH= DB_BASE + 'db_main'
-MLFLOW_URI = './MLFLOW/'
+MAX_DB = 100
 
 def open_env(path=''):
     return lmdb.open(path, map_size=MAP_SIZE, max_dbs=MAX_DB, lock=False, meminit=False)
@@ -29,7 +33,7 @@ def open_env(path=''):
 
 def open_env_read(path='', base=False):
     if base is True:
-        return lmdb.open(DB_BASE+path, max_readers=32, writemap=True, readonly=False, lock=False, readahead=False,
+        return lmdb.open(DB_BASE + path, max_readers=32, writemap=True, readonly=False, lock=False, readahead=False,
                          meminit=False, max_dbs=MAX_DB)
     else:
         return lmdb.open(path, max_readers=32, writemap=True, readonly=False, lock=False, readahead=False,
@@ -82,14 +86,14 @@ def unregister_db(env=None, db_name=None):
 
 def create_meta_db(path='/', name='', description=''):
     cache = {}
-    env = lmdb.open(path+name, map_size=MAP_SIZE, max_dbs=MAX_DB, lock=False)
+    env = lmdb.open(path + name, map_size=MAP_SIZE, max_dbs=MAX_DB, lock=False)
     cache[b'mlflow_uri'] = str(MLFLOW_URI).encode()
     cache[b'mlflow_experiment'] = str('').encode()
     cache[b'name'] = str(name).encode()
     cache[b'created'] = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S')).encode()
     cache[b'updated'] = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S')).encode()
     cache[b'description'] = str(description).encode()
-    cache[b'reference'] = str(path+name).encode()
+    cache[b'reference'] = str(path + name).encode()
     write_cache_to_env(env, cache)
 
     return env
@@ -116,19 +120,19 @@ def update_inference(env, index=None, config=None, process=None, module=None, re
     cache = {}
 
     if config is not None:
-        ckey = 'config-%09d'%index
+        ckey = 'config-%09d' % index
         cache[str(ckey).encode()] = config.encode()
 
     if process is not None:
-        ckey = 'process-%09d'%index
+        ckey = 'process-%09d' % index
         cache[str(ckey).encode()] = process.encode()
 
     if module is not None:
-        ckey = 'module-%09d'%index
+        ckey = 'module-%09d' % index
         cache[str(ckey).encode()] = module.encode()
 
     if ref is not None:
-        ckey = 'ref-%09d'%index
+        ckey = 'ref-%09d' % index
         cache[str(ckey).encode()] = ref.encode()
 
     write_cache_to_env(env, cache)
@@ -156,7 +160,7 @@ def update_cache_in_queue(q=Queue(), index=None, label='', image=None, text=None
                           char_i=None, char_c=None, word=None, word_i=None, word_c=None, image_c=None,
                           image_w=None, word_ner=None, table=None, db=None, sep='\t'):
     p = Process(target=update_cache, args=({}, index, label, image, text, ref, char, char_i, char_c, word, word_i,
-                word_c, image_c, image_w, word_ner, table, db, sep, q))
+                                           word_c, image_c, image_w, word_ner, table, db, sep, q))
     p.start()
 
     return p, q
@@ -169,51 +173,51 @@ def update_data(env, index=None, label='', image=None, text=None, ref='', char=N
     cache = {}
 
     if label is not None:
-        ckey = 'label-%09d'%index
+        ckey = 'label-%09d' % index
         cache[str(ckey).encode()] = label.encode()
 
     if ref is not None:
-        ckey = 'ref-%09d'%index
+        ckey = 'ref-%09d' % index
         cache[str(ckey).encode()] = ref.encode()
 
     if char is not None:
-        ckey = 'char-%09d'%index
+        ckey = 'char-%09d' % index
         cache[str(ckey).encode()] = encode_list(char, sep=sep)
 
     if char_i is not None:
-        ckey = 'char_i-%09d'%index
+        ckey = 'char_i-%09d' % index
         cache[str(ckey).encode()] = encode_list(char_i, sep=sep)
 
     if char_c is not None:
-        ckey = 'char_c-%09d'%index
+        ckey = 'char_c-%09d' % index
         cache[str(ckey).encode()] = encode_pd(char_c, sep=sep)
 
     if word is not None:
-        ckey = 'word-%09d'%index
+        ckey = 'word-%09d' % index
         cache[str(ckey).encode()] = encode_list(word, sep=sep)
 
     if word_i is not None:
-        ckey = 'word_i-%09d'%index
+        ckey = 'word_i-%09d' % index
         cache[str(ckey).encode()] = encode_list(word_i, sep=sep)
 
     if word_c is not None:
-        ckey = 'word_c-%09d'%index
+        ckey = 'word_c-%09d' % index
         cache[str(ckey).encode()] = encode_pd(word_c, sep=sep)
 
     if word_ner is not None:
-        ckey = 'word_ner-%09d'%index
+        ckey = 'word_ner-%09d' % index
         cache[str(ckey).encode()] = encode_list(word_ner, sep=sep)
 
     if table is not None:
-        ckey = 'table-%09d'%index
+        ckey = 'table-%09d' % index
         cache[str(ckey).encode()] = encode_pdlist(table, sep=sep)
 
     if db is not None:
-        ckey = 'db-%09d'%index
+        ckey = 'db-%09d' % index
         cache[str(ckey).encode()] = encode_pdlist(db, sep=sep)
 
     if text is not None:
-        ckey = 'text-%09d'%index
+        ckey = 'text-%09d' % index
         cache[str(ckey).encode()] = text.encode()
 
     if image is not None:
@@ -226,7 +230,7 @@ def update_data(env, index=None, label='', image=None, text=None, ref='', char=N
         for ci in range(len(image_w)):
             temp = BytesIO()
             image.save(temp, 'JPEG')
-            ckey = 'img_w-%09d-%09d'%(index, ci)
+            ckey = 'img_w-%09d-%09d' % (index, ci)
             cache[str(ckey).encode()] = temp.getvalue()
 
     if image_c is not None:
@@ -244,56 +248,55 @@ def update_data(env, index=None, label='', image=None, text=None, ref='', char=N
 def update_cache(cache, index=None, label='', image=None, text=None, ref='', char=None,
                  char_i=None, char_c=None, word=None, word_i=None, word_c=None, image_c=None,
                  image_w=None, word_ner=None, table=None, db=None, sep='\t', queue=None):
-
     if queue is not None:
         cache = {}
 
     if label is not None:
-        ckey = 'label-%09d'%index
+        ckey = 'label-%09d' % index
         cache[str(ckey).encode()] = label.encode()
 
     if ref is not None:
-        ckey = 'ref-%09d'%index
+        ckey = 'ref-%09d' % index
         cache[str(ckey).encode()] = ref.encode()
 
     if char is not None:
-        ckey = 'char-%09d'%index
+        ckey = 'char-%09d' % index
         cache[str(ckey).encode()] = encode_list(char, sep=sep)
 
     if char_i is not None:
-        ckey = 'char_i-%09d'%index
+        ckey = 'char_i-%09d' % index
         cache[str(ckey).encode()] = encode_list(char_i, sep=sep)
 
     if char_c is not None:
-        ckey = 'char_c-%09d'%index
+        ckey = 'char_c-%09d' % index
         cache[str(ckey).encode()] = encode_pd(char_c, sep=sep)
 
     if word is not None:
-        ckey = 'word-%09d'%index
+        ckey = 'word-%09d' % index
         cache[str(ckey).encode()] = encode_list(word, sep=sep)
 
     if word_i is not None:
-        ckey = 'word_i-%09d'%index
+        ckey = 'word_i-%09d' % index
         cache[str(ckey).encode()] = encode_list(word_i, sep=sep)
 
     if word_c is not None:
-        ckey = 'word_c-%09d'%index
+        ckey = 'word_c-%09d' % index
         cache[str(ckey).encode()] = encode_pd(word_c, sep=sep)
 
     if word_ner is not None:
-        ckey = 'word_ner-%09d'%index
+        ckey = 'word_ner-%09d' % index
         cache[str(ckey).encode()] = encode_list(word_ner, sep=sep)
 
     if table is not None:
-        ckey = 'table-%09d'%index
+        ckey = 'table-%09d' % index
         cache[str(ckey).encode()] = encode_pdlist(table, sep=sep)
 
     if db is not None:
-        ckey = 'db-%09d'%index
+        ckey = 'db-%09d' % index
         cache[str(ckey).encode()] = encode_pdlist(db, sep=sep)
 
     if text is not None:
-        ckey = 'text-%09d'%index
+        ckey = 'text-%09d' % index
         cache[str(ckey).encode()] = text.encode()
 
     if image is not None:
@@ -306,7 +309,7 @@ def update_cache(cache, index=None, label='', image=None, text=None, ref='', cha
         for ci in range(len(image_w)):
             temp = BytesIO()
             image.save(temp, 'JPEG')
-            ckey = 'img_w-%09d-%09d'%(index, ci)
+            ckey = 'img_w-%09d-%09d' % (index, ci)
             cache[str(ckey).encode()] = temp.getvalue()
 
     if image_c is not None:
@@ -430,8 +433,9 @@ def read_bulk_key_from_db(env=None, db_name='db_data', prefix='None'):
             key_list = [key.decode() for key, _ in txn.cursor(db)]
     else:
         with env.begin(write=False) as txn:
-            key_list = [key.decode() for key, _ in txn.cursor(db) if key.decode().startswith(prefix+'-')]
+            key_list = [key.decode() for key, _ in txn.cursor(db) if key.decode().startswith(prefix + '-')]
     return key_list
+
 
 def read_data_from_db_by_index(env=None, prefix=None, index=None, db_name='db_data'):
     db = env.open_db(str(db_name).encode())
@@ -441,7 +445,7 @@ def read_data_from_db_by_index(env=None, prefix=None, index=None, db_name='db_da
         if isinstance(index, str):
             key = index
         else:
-            key = '%s-%09d'%(prefix, index)
+            key = '%s-%09d' % (prefix, index)
 
         value = db_cs.get(str(key).encode())
         key = str(key)
@@ -459,7 +463,7 @@ def read_data_from_db_by_index(env=None, prefix=None, index=None, db_name='db_da
                 if key.startswith(prefix):
                     rdata = value.decode('utf-8')
         except:
-            rdata = '('+prefix+')'
+            rdata = '(' + prefix + ')'
 
         return rdata
 
@@ -646,9 +650,9 @@ def print_db_summary(env=None, db_name=None, save=False, save_path='', wmode='a'
         original_out = sys.stdout
         sys.stdout = open(save_path, wmode)
 
-    #if db_name is None:
+    # if db_name is None:
     db = env.open_db(b'db_data')
-    #else:
+    # else:
     #    db = env.open_db(str(db_name).encode())
 
     tb = PrettyTable(['Key', 'Value'])
@@ -658,7 +662,7 @@ def print_db_summary(env=None, db_name=None, save=False, save_path='', wmode='a'
     with env.begin(write=False) as txn:
         keylist = [key.decode() for key, _ in txn.cursor(db)]
 
-    dataclass_name = np.unique([key.split('-',1)[0] for key in keylist])
+    dataclass_name = np.unique([key.split('-', 1)[0] for key in keylist])
     number_of_value = len(keylist)
     number_of_dataclass = len(dataclass_name)
     if number_of_dataclass == 0:
@@ -677,11 +681,11 @@ def print_db_summary(env=None, db_name=None, save=False, save_path='', wmode='a'
 
     if number_of_data > 0:
         randomindex = np.random.randint(0, high=number_of_data, size=1)[0]
-        tb.add_row(['eg. index',randomindex])
+        tb.add_row(['eg. index', randomindex])
         for dclass in dataclass_name:
             exdata = read_data_from_db_by_index(env=env, prefix=dclass, index=randomindex)
             examples.append(exdata)
-            tb.add_row(['eg. '+dclass, exdata])
+            tb.add_row(['eg. ' + dclass, exdata])
     print(tb)
 
     if save is True:
@@ -702,7 +706,7 @@ def get_db_summary(env=None, db_name=None, prefix=''):
     with env.begin(write=False) as txn:
         keylist = [key.decode('utf-8') for key, _ in txn.cursor(db)]
 
-    dataclass_name = np.unique([key.split('-',1)[0] for key in keylist])
+    dataclass_name = np.unique([key.split('-', 1)[0] for key in keylist])
     number_of_value = len(keylist)
     number_of_dataclass = len(dataclass_name)
     if number_of_dataclass == 0:
@@ -713,16 +717,16 @@ def get_db_summary(env=None, db_name=None, prefix=''):
         if keyl.startswith('label'):
             number_of_data = number_of_data + 1
 
-    summarydict = {prefix+'number of data':number_of_data,
-                   prefix+'number of class':number_of_dataclass,
-                   prefix+'classes':str(dataclass_name)}
+    summarydict = {prefix + 'number of data': number_of_data,
+                   prefix + 'number of class': number_of_dataclass,
+                   prefix + 'classes': str(dataclass_name)}
 
     if number_of_data > 0:
         randomindex = np.random.randint(0, high=number_of_data, size=1)[0]
-        summarydict[prefix+'eg. index'] = randomindex
+        summarydict[prefix + 'eg. index'] = randomindex
         for dclass in dataclass_name:
             exdata = read_data_from_db_by_index(env=env, prefix=dclass, index=randomindex)
-            summarydict[prefix+'eg. '+dclass] = exdata
+            summarydict[prefix + 'eg. ' + dclass] = exdata
 
     return summarydict
 
@@ -739,7 +743,7 @@ def get_env_summary(env=None, prefix=''):
         except:
             value = ''
 
-        summarydict[prefix+key] = value
+        summarydict[prefix + key] = value
 
     return summarydict
 
@@ -759,7 +763,7 @@ def read_bulk_key_from_meta_db(env=None):
         db_data = open_env(dpath)
         llist = read_bulk_key_from_db(env=db_data)
         for lind in range(len(llist)):
-            llist[lind] = dname+'://'+llist[lind]
+            llist[lind] = dname + '://' + llist[lind]
         ldata.extend(llist)
 
     return ldata
@@ -786,7 +790,7 @@ def read_all_data_from_meta_db(env, prefix, overridelabel=None):
     for idx, data_env in enumerate(dbs):
         exdata = read_bulk_key_from_db(env=data_env, prefix=prefix)
         if prefix == 'label' and overridelabel is not None:
-            exdata = [overridelabel[idx]]*len(exdata)
+            exdata = [overridelabel[idx]] * len(exdata)
         data.extend(exdata)
 
     return data
@@ -798,7 +802,7 @@ def read_all_keys_from_meta_db(env, prefix, overridelabel=None, remove_last=Fals
     pbar = tqdm(len(db_names))
     for data_env, name_env in zip(dbs, db_names):
         pbar.update(1)
-        pbar.set_description('read keys from: ',name_env)
+        pbar.set_description('read keys from: ', name_env)
 
         exdata = get_key_names_in_db(env=data_env, prefix=prefix)
 
@@ -845,7 +849,7 @@ def split_list(data, ratio=[0.7, 0.3], shuffle=True, set_data_length=True, data_
         data = sdata
 
     for ridx in range(len(ratio)):
-        fsi = int(datalen*ratio[ridx]+si)
+        fsi = int(datalen * ratio[ridx] + si)
         if fsi > datalen:
             fsi = datalen
 
@@ -867,14 +871,14 @@ def split_list(data, ratio=[0.7, 0.3], shuffle=True, set_data_length=True, data_
     return spdata
 
 
-def refresh_main_db(main_db_path=DB_BASE+'*'):
+def refresh_main_db(main_db_path=DB_BASE + '*'):
     env = open_env(DB_MAIN_PATH)
     db = env.open_db(str('db_data').encode())
     dbnames = []
     with env.begin(write=False) as txn:
         for key, value in txn.cursor(db):
             if os.path.isdir(value.decode()) == 0:
-                print('::: no data exist from db ::: '+ key.decode())
+                print('::: no data exist from db ::: ' + key.decode())
                 unregister_db(db_name=os.path.basename(key.decode()))
 
     dbpath = glob(main_db_path)
@@ -886,7 +890,7 @@ def refresh_main_db(main_db_path=DB_BASE+'*'):
                 register_db(db=open_env(dbname))
                 dblist.append(os.path.basename(dbname))
             except:
-                print('--- no data exist from file system --- '+dbname)
+                print('--- no data exist from file system --- ' + dbname)
                 unregister_db(db_name=os.path.basename(dbname))
     print_db(open_env(DB_MAIN_PATH))
     return dblist
@@ -895,7 +899,7 @@ def refresh_main_db(main_db_path=DB_BASE+'*'):
 def encode_list(data=None, sep='\t'):
     data = [str(d) for d in data]
     buf = io.StringIO()
-    csvwriter = csv.writer(buf, delimiter = sep)
+    csvwriter = csv.writer(buf, delimiter=sep)
     csvwriter.writerows(data)
     return io.BytesIO(buf.getvalue().encode('utf8')).read()
 
@@ -948,20 +952,3 @@ def encode_pickle(data=None, sep='\t'):
 
 def decode_pickle(data=None, sep='\t'):
     return pickle.loads(data)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

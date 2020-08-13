@@ -1,20 +1,20 @@
 {
 	"exp":{
-		"name": "d2gan_new7, cont"
+		"name": "d2gan test training"
 	},
 	"MLFLOW":{
 		"module_name":"D2GAN",
-		"exp_name":"[DK] d2gan testrun 1",
+		"exp_name":"[MS] d2gan train test 0002",
 		"MAIN_URI":""
 	},
 	"META_DB":{
 		"load_existing_meta_db": false,
-		"name":"d2gan_testrun_1",
+		"name":"d2gan_train_0001_meta",
 		"path":"/media/myungsungkwak/msdisk/temp/",
 		"log":"/info.txt",
-		"description":"dtest detection model을 위한 meta data DB",
-		"dblist":"detect_NEW2_2newnoisedenoisingGAN,detect_NEW2_2newnoiseNone",
-		"DB_MAIN_PATH":""
+		"description":"code check를 위한 meta db",
+		"dblist":"d2gan_train_0001",
+		"DB_MAIN_PATH":"/media/myungsungkwak/msdisk/docrv2_sroie/DB/db_main"
 	},
 	"data":{
 		"image_size_h":160,
@@ -28,19 +28,19 @@
 	"model":{
 		"name":"model.d2gan",
 		"descale_factor":2,
-		"weight_path":"/media/myungsung/msdisk/pretrained/vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5",
-		"pretrained_model_path":"/media/myungsung/msdisk/MLFLOW_SQLITE/artifacts/models_generator/data/model.h5",
-		"use_pretrained":true,
+		"weight_path":"/media/myungsungkwak/msdisk/pretrained/vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5",
+		"pretrained_model_path":"/media/myungsungkwak/msdisk/MLFLOW_SQLITE/artifacts/models_generator/data/model.h5",
+		"use_pretrained":false,
 		"optimizer":"adam",
 		"loss":"mse"
 	},
 	"trainer":{
 		"name":"trainer.Trainer",
-		"num_epochs":100000,
+		"num_epochs":100,
 		"num_steps":2,
-		"batch_size":8,
+		"batch_size":4,
 		"validation_view_size":2,
-		"validation_steps":500,
+		"validation_steps":10,
 		"train_valid_ratio":0.9,
 		"verbose_training":true
 	},

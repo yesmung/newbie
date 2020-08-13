@@ -4,11 +4,18 @@
 import mlflow
 import mlflow.tensorflow
 
-MLFLOW_URI = 'sqlite:////media/myungsungkwak/msdisk/mlflow_data/mlflow.db'
-artifact_path = '/media/myungsungkwak/msdisk/MLFLOW_SQLITE/'
+import os
+from configparser import ConfigParser
+path_config_file = os.getcwd().split('docrv2_sroie')[0] + 'docrv2_sroie/' + 'config.ini'
+common_variable = ConfigParser()
+common_variable.read(path_config_file)
+
+MLFLOW_URI = common_variable['mlflow']['MLFLOW_URI']
+artifact_path = common_variable['mlflow']['artifact_path']
 
 # Enable auto-logging to MLflow to capture TensorBoard metrics.
 mlflow.tensorflow.autolog(1)
+
 
 def start_mlflow(config):
     # try:

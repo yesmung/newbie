@@ -80,14 +80,14 @@ class Trainer(BaseTrain):
 		dataset_train = self.train_data.as_numpy_iterator()
 		dataset_valid = self.val_data.as_numpy_iterator()
 
-		batch_size = self.cofig.trainer.batch_size
+		batch_size = self.config.trainer.batch_size
 		epoch_size = self.config.trainer.num_epochs
 		steps_per_epoch = self.config.trainer.num_steps
 		validation_steps = self.config.trainer.validation_steps
 
 		# log model
 		mlflow.keras.log_model(self.model.combined, "models_combined")
-		mlflow.keras.log_model(self.modle.discriminator, "models_discriminator")
+		mlflow.keras.log_model(self.model.discriminator, "models_discriminator")
 		mlflow.keras.log_model(self.model.generator, "models_generator")
 
 		start_time = datetime.datetime.now()
@@ -103,7 +103,7 @@ class Trainer(BaseTrain):
 			fake_hr = self.model.generator.predict(imgs_lr)
 
 			valid = np.ones((batch_size,) + self.disc_patch)
-			fake = np.zeors((batch_size,) + self.disc_patch)
+			fake = np.zeros((batch_size,) + self.disc_patch)
 
 			# Train the discriminators (original images = real / generated = Fake)
 
@@ -124,10 +124,10 @@ class Trainer(BaseTrain):
 			# Extract ground truth image features using pre-trained VGG19 model
 			image_features = self.model.vgg.predict(imgs_hr)
 
-			# Train the genreators
+			# Train the generators
 			g_loss = self.model.combined.train_on_batch([imgs_lr, imgs_hr], [valid, image_features])
 
-			elapsed_time = datetime.datetime.no() - start_time
+			elapsed_time = datetime.datetime.now() - start_time
 
 			# log
 			if epoch % validation_steps == 0:
