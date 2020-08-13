@@ -189,7 +189,7 @@ class Trainer(BaseTrain):
 				axs[row, col].set_title(titles[col])
 				axs[row, col].axis('off')
 			cnt += 1
-		fig.savefig(spath+"images/%s/%08d.png" % (self.dataset_name, epoch),"validataion_images")
+		fig.savefig(spath+"images/%s/%08d.png" % (self.dataset_name, epoch))
 
 		"""
 		# Save low resolution images for comparision

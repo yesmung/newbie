@@ -183,10 +183,8 @@ class DataLoader(BaseDataLoader):
                 lines = [None] * len(tlines)
                 for i in range(len(tlines)):
                     for j in range(8):
-                        # print("- : ", tlines[i][j], " types : ", type(tlines[i][j]))
-                        #tlines[i][j] = int(tlines[i][j])
+                        tlines[i][j] = int(tlines[i][j])
                     lines[i] = tuple(tlines[i])
-                    # tlines[i][j] = np.array(np.round(tlines[i][j]), dtype=int)
 
                 if use_otsu:
                     img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)

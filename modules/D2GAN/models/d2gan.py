@@ -106,7 +106,7 @@ class DetectionModel(BaseModel):
         # Generate high res. version from low res.
         fake_hr = self.generator(img_lr)
 
-        # Extract image features of the genrated img
+        # Extract image features of the generated img
         fake_features = self.vgg(fake_hr)
 
         # For the combined model we will only train the generator
@@ -140,7 +140,7 @@ class DetectionModel(BaseModel):
 		Builds a pre-trained VGG19 model that ouputs image featuers extracted at the third block of the model
 		"""
 
-        vgg = VGG19(include_top=False, weights=self.config.model.weight_path, input_shape=self.hr_shape)
+        vgg = VGG19(include_top=False, input_shape=self.hr_shape)
 
         # See outputs to outputs of last conv. layer in block 3
         # See architecture at: https://github.com/keras-team/keras/blob/master/keras/applications/vgg19.py
