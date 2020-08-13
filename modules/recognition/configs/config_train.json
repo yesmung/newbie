@@ -1,29 +1,29 @@
 {
   "exp": {
-    "name": "addition2_5_usecharonly",
-    "path": "/SAM/jupyter/DK/temp/"
+    "name": "test",
+    "path": "/home/dk/docr2/temp/"
   },
   "MLFLOW": {
-    "module_name": "RECOG_USECASE",
-    "exp_name":"[DK] addition2_5, space, usecharonly",
+    "module_name": "RECOG",
+    "exp_name":"[DK] recognition test",
     "MAIN_URI": ""
   },
   "META_DB": {
     "load_existing_mete_db": false,
-    "name": "recog_usecase_addition2_25",
-    "path": "/SAM/jupyter/DK/temp/",
+    "name": "recog_test_1",
+    "path": "/home/dk/docr2/temp/",
     "log": "/info.txt",
     "description": "recognition test meta data db",
-    "dblist": "recog_usecaseonlyWSPACE_1,recog_usecaseonlyWSPACE_2,recog_usecaseonlyWSPACE_3",
-    "batch_ratio": "0.5,0.25,0.25",
-    "dbvalid": "recog_usecaseonly_test_merge_addition2",
+    "dblist": "recog_test_1",
+    "batch_ratio": "1",
+    "dbvalid": "recog_test_1",
     "DB_MAIN_PATH": ""
   },
   "model": {
     "name": "model.Model",
     "weight_path": "",
     "use_pretrained": true,
-    "pretrained_model_path": "/media/myungsung/msdisk/MLFLOW_SQLITE/artifacts/model/data/best_accuracy/model.h5",
+    "pretrained_model_path": "",
     "transformation": "None",
     "featureExtraction": "ResNet",
     "sequenceModeling": "BiLSTM",

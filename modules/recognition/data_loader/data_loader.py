@@ -5,10 +5,10 @@ from base.base_data_loader import BaseDataLoader
 import os
 import sys
 import numpy as np
-sys.path.append('/media/myungsungkwak/msdisk/docrv2_sroie/modules/database')
+sys.path.append('/home/dk/docr2/modules/database')
 from db_util import *
 from db import *
-DB_MAIN_PATH = '/SAM/jupyter/DK/DB/db_main'
+DB_MAIN_PATH = '/home/dk/docr2/DB/db_main'
 
 import mlflow
 import mlflow.pytorch
@@ -68,7 +68,7 @@ class DataLoader(BaseDataLoader):
         print_db(db_meta)
         envsm_main = get_env_summary(db_meta, prefix='__meta__/')
         mlflow.log_params(envsm_main)
-        mlflow.log_params('__meta__/-', '-'*200)
+        mlflow.log_param('__meta__/-', '-'*200)
 
         # get/set data db info
         for idx in range(len(list_db_name)):

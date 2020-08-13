@@ -29,10 +29,10 @@ def open_env(path=''):
 
 def open_env_read(path='', base=False):
     if base is True:
-        return lmdb.open(DB_BASE+path, max_readers=32, writemap=True, readonly=True, lock=False, readahead=False,
+        return lmdb.open(DB_BASE+path, max_readers=32, writemap=True, readonly=False, lock=False, readahead=False,
                          meminit=False, max_dbs=MAX_DB)
     else:
-        return lmdb.open(path, max_readers=32, writemap=True, readonly=True, lock=False, readahead=False,
+        return lmdb.open(path, max_readers=32, writemap=True, readonly=False, lock=False, readahead=False,
                          meminit=False, max_dbs=MAX_DB)
 
 
@@ -484,6 +484,8 @@ def set_dbs_to_meta_db(db_main=None, db_meta=None, db_list=None):
 
         db_meta = register_db_by_path(env=db_meta, db_name=db_name, db_path=db_path)
 
+    return db_meta
+
 
 def read_bulk_data_from_meta_db(env=None, prefix=None):
     db_name = []
@@ -690,10 +692,10 @@ def print_db_summary(env=None, db_name=None, save=False, save_path='', wmode='a'
 
 
 def get_db_summary(env=None, db_name=None, prefix=''):
-    # if db_name is None:
-    db = env.open_db(b'db_data')
-    # else:
-    #    db = env.open_db(str(db_name).encode())
+    if db_name is None:
+        db = env.open_db(b'db_data')
+    else:
+        db = env.open_db(str(db_name).encode())
 
     with env.begin(write=False) as txn:
         keylist = [key.decode('utf-8') for key, _ in txn.cursor(db)]

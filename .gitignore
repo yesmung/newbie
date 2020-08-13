@@ -121,6 +121,8 @@ venv.bak/
 /site
 data/font/
 DB/
+temp/
+mlflow/
 
 # mypy
 .mypy_cache/

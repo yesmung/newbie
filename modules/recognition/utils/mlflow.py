@@ -3,8 +3,8 @@
 #mlflow lib
 import mlflow
 import mlflow.pytorch
-MLFLOW_URI = 'sqlite:///home/blabla/mlflow.db'
-artifact_path = '/media/myungsung/msdisk/MLFLOW_SQLITE/'
+MLFLOW_URI = 'sqlite:////home/dk/docr2/mlflow/mlflow.db'
+artifact_path = '/home/dk/docr2/mlflow/'
 
 def start_mlflow(config):
 	mf_experimentname = config.MLFLOW.module_name
@@ -30,5 +30,6 @@ def start_mlflow(config):
 	mlflow.log_params(config.dict)
 
 	config.mlrun = mlrun
+	config.MLFLOW.artifact_path = artifact_path
 
 	return config

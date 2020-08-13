@@ -19,10 +19,10 @@ import json
 
 from base.base_trainer import BaseTrain
 
-from recognition.models.utils import CTCLabelConverter, AttnLabelConverter, Averager
-from recognition.data_loader.dataset import hierarchical_dataset, AlignCollate, Batch_Balanced_Dataset, inference_dataset
-from recognition.models.model import Model
-from recognition.trainers.test import validation, recog_loader
+from models.utils import CTCLabelConverter, AttnLabelConverter, Averager
+from data_loader.dataset import hierarchical_dataset, AlignCollate, Batch_Balanced_Dataset, inference_dataset
+from models.model import Model
+from trainers.test import validation, recog_loader
 
 from tqdm import tqdm
 
@@ -139,7 +139,7 @@ class Trainer(BaseTrain):
 
         # mlflow log
         model_summary_path = self.config.META_DB.path + self.config.META_DB.name + '/model_summary.txt'
-        print(model, file=open(model_summary_path), 'a')
+        print(model, file=open(model_summary_path, 'a'))
         mlflow.log_artifact(model_summary_path)
 
         """ setup loss """
