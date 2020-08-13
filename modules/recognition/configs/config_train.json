@@ -5,18 +5,18 @@
   },
   "MLFLOW": {
     "module_name": "RECOG",
-    "exp_name":"[DK] recognition test",
+    "exp_name":"[DK] initial recognition training",
     "MAIN_URI": ""
   },
   "META_DB": {
     "load_existing_meta_db": false,
-    "name": "recog_test_2",
+    "name": "recog_train_0813_1",
     "path": "/home/dk/docr2/temp/",
     "log": "/info.txt",
     "description": "recognition test meta data db",
-    "dblist": "recog_test_1",
+    "dblist": "recog_train_100000",
     "batch_ratio": "1",
-    "dbvalid": "recog_test_1",
+    "dbvalid": "recog_test_1000",
     "DB_MAIN_PATH": ""
   },
   "model": {
@@ -44,9 +44,9 @@
     "name": "trainer.Trainer",
     "num_epochs": 10000,
     "num_steps": 100,
-    "batch_size": 64,
+    "batch_size": 16,
     "train_valid_ratio": 0.7,
-    "valid_interval": 600,
+    "valid_interval": 100,
     "verbose_training": true
   },
   "callbacks":{
@@ -58,9 +58,9 @@
     "tensorboard_write_graph": false
   },
   "data": {
-    "image_size_h": 36,
-    "image_size_w": 288,
-    "batch_max_length": 40,
+    "image_size_h": 48,
+    "image_size_w": 512,
+    "batch_max_length": 50,
     "num_reading_workers": 0,
     "PAD": true,
     "character": "default"
