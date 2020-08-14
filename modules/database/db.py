@@ -876,7 +876,7 @@ def refresh_main_db(main_db_path=DB_BASE + '*', force_path=False):
     env = open_env(DB_MAIN_PATH)
     db = env.open_db(str('db_data').encode())
     dbnames = []
-    with env.begin(write=False) as txn:+
+    with env.begin(write=False) as txn:
         for key, value in txn.cursor(db):
             if os.path.isdir(value.decode()) == 0:
                 print('::: no data exist from db ::: ' + key.decode())
