@@ -13,12 +13,12 @@ import tensorflow as tf
 
 def rescale_images(image):
     image = image * 127.5 + 127.5
-    return np.array(image, dtype=np.int8)
+    return np.array(image, dtype=np.uint8)
 
 
 def rescale_maps(image):
     image = image * 127.5 + 127.5
-    return np.array(image, dtype=np.int8)
+    return np.array(image, dtype=np.uint8)
 
 
 def per_image_standardization(image):
