@@ -147,9 +147,13 @@ class DataLoader(BaseDataLoader):
             chars.append(char_list[idx][0] + ',' + char_list[idx][1])
 
         # split dataset train/validation
-        img_s = split_list(imgs, [train_valid_ratio, 1 - train_valid_ratio], shuffle=True,
+        img_s = split_list(imgs,
+                           [train_valid_ratio, 1 - train_valid_ratio],
+                           shuffle=True,
                            data_length=[epoch_size * step_size * batch_size, epoch_size * batch_size])
-        coord_s = split_list(chars, [train_valid_ratio, 1 - train_valid_ratio], shuffle=True,
+        coord_s = split_list(chars,
+                             [train_valid_ratio, 1 - train_valid_ratio],
+                             shuffle=True,
                              data_length=[epoch_size * step_size * batch_size, epoch_size * batch_size])
 
         if make_channel == True:

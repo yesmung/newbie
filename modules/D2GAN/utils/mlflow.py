@@ -2,6 +2,7 @@
 
 # mlflow lib
 import mlflow
+import mlflow.keras
 import mlflow.tensorflow
 
 import os
@@ -15,6 +16,7 @@ artifact_path = common_variable['mlflow']['artifact_path']
 
 # Enable auto-logging to MLflow to capture TensorBoard metrics.
 mlflow.tensorflow.autolog(1)
+# mlflow.keras.autolog(1)
 
 
 def start_mlflow(config):

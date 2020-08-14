@@ -7,6 +7,7 @@ import os
 
 #mlflow lib
 import mlflow
+import mlflow.tensorflow
 import mlflow.keras
 import datetime
 from mlflow.tracking.client import MlflowClient
@@ -57,7 +58,8 @@ class Trainer(BaseTrain):
 	def train(self):
 		# activate ml run
 		mlflow.ActiveRun(self.config.mlrun)
-		mlflow.keras.autolog()
+		mlflow.tensorflow.autolog(1)
+		# mlflow.keras.autolog(1)
 
 		dataset_train = self.train_data
 		dataset_valid = self.val_data
@@ -75,7 +77,8 @@ class Trainer(BaseTrain):
 	def train_gan(self):
 		# activate ml run
 		mlflow.ActiveRun(self.config.mlrun)
-		mlflow.keras.autolog()
+		mlflow.tensorflow.autolog(1)
+		# mlflow.keras.autolog(1)
 
 		dataset_train = self.train_data.as_numpy_iterator()
 		dataset_valid = self.val_data.as_numpy_iterator()
@@ -86,9 +89,12 @@ class Trainer(BaseTrain):
 		validation_steps = self.config.trainer.validation_steps
 
 		# log model
-		mlflow.keras.log_model(self.model.combined, "models_combined")
-		mlflow.keras.log_model(self.model.discriminator, "models_discriminator")
-		mlflow.keras.log_model(self.model.generator, "models_generator")
+		# mlflow.tensorflow.log_model(self.model.combined, "models_combined")
+		# mlflow.tensorflow.log_model(self.model.discriminator, "models_discriminator")
+		# mlflow.tensorflow.log_model(self.model.generator, "models_generator")
+		mlflow.keras.log_model(self.model.combined, artifact_path="models_combined")
+		mlflow.keras.log_model(self.model.discriminator, artifact_path="models_discriminator")
+		mlflow.keras.log_model(self.model.generator, artifact_path="models_generator")
 
 		start_time = datetime.datetime.now()
 		for epoch in tqdm(range(epoch_size)):
@@ -157,9 +163,12 @@ class Trainer(BaseTrain):
 						mlflow.log_metrics({'best_model_epoch':epoch}, step=epoch)
 
 			# log model
-			mlflow.keras.log_model(self.model.combined,"models_combined")
-			mlflow.keras.log_model(self.model.discriminator,"models_discriminator")
-			mlflow.keras.log_model(self.model.generator,"models_generator")
+			# mlflow.tensorflow.log_model(self.model.combined,"models_combined")
+			# mlflow.tensorflow.log_model(self.model.discriminator,"models_discriminator")
+			# mlflow.tensorflow.log_model(self.model.generator,"models_generator")
+			mlflow.keras.log_model(self.model.combined, artifact_path="models_combined")
+			mlflow.keras.log_model(self.model.discriminator, artifact_path="models_discriminator")
+			mlflow.keras.log_model(self.model.generator, artifact_path="models_generator")
 
 			# create example at the last step
 			imgs_lr, imgs_hr = next(dataset_valid)
@@ -186,6 +195,7 @@ class Trainer(BaseTrain):
 		for row in range(r):
 			for col, image in enumerate([imgs_lr, imgs_hr, fake_hr]):
 				axs[row, col].imshow(image[row])
+				# axs[row, col].imshow(image[row].astype(np.uint8))
 				axs[row, col].set_title(titles[col])
 				axs[row, col].axis('off')
 			cnt += 1
