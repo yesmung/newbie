@@ -3,8 +3,19 @@
 #mlflow lib
 import mlflow
 import mlflow.keras
-MLFLOW_URI = 'sqlite:///home/blabla/mlflow.db'
-artifact_path = '/media/myungsung/msdisk/MLFLOW_SQLITE/'
+import mlflow.tensorflow
+import os
+from configparser import ConfigParser
+path_config_file = os.getcwd().split('docrv2_sroie')[0] + 'docrv2_sroie/' + 'config.ini'
+common_variable = ConfigParser()
+common_variable.read(path_config_file)
+
+MLFLOW_URI = common_variable['mlflow']['MLFLOW_URI']
+artifact_path = common_variable['mlflow']['artifact_path']
+
+# Enable auto-logging to MLflow to capture TensorBoard metrics.
+mlflow.tensorflow.autolog(1)
+# mlflow.keras.autolog(1)
 
 def start_mlflow(config):
 	mf_experimentname = config.MLFLOW.module_name

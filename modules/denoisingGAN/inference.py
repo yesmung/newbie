@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # CUDA_VISIBLE_DEVICES=1 python inference.py -c ./configs/config_inference.json
 
-from __future__ absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from data_loader.data_loader import DataLoader
 from models.d2gan import DetectionModel
@@ -15,26 +15,28 @@ from utils.dir import create_dirs
 import os
 import numpy as np
 
+
 def main():
-	args = get_args()
-	config = process_config(args.config)
+    args = get_args()
+    config = process_config(args.config)
 
-	# MEATA DB 생성
-	print("Create META DB and load data")
-	data_loader = DataLoader(config)
-	dataset = data_loader.get_inference_data()
+    # META DB 생성
+    print("Create META DB and load data")
+    data_loader = DataLoader(config)
+    dataset = data_loader.get_inference_data()
 
-	# MODEL 생성
-	print("Load the model")
-	model = DetectionModel(config)
+    # MODEL 생성
+    print("Load the model")
+    model = DetectionModel(config)
 
-	# PREDICT
-	print("Perform predictions")
-	predictions_img = model.detect(dataset, descale=config.model.descale_factor)
+    # PREDICT
+    print("Perform predictions")
+    predictions_img = model.detect(dataset, descale=config.model.descale_factor)
 
-	# 결과 저장 to Inference DB
-	print("Save to DB")
-	data_loader.save_to_db(prediction=predictions_img, data=dataset)
+    # 결과 저장 to Inference DB
+    print("Save to DB")
+    data_loader.save_to_db(prediction=predictions_img, data=dataset)
+
 
 if __name__ == '__main__':
-	main()
+    main()

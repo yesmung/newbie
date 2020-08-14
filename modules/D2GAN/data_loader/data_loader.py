@@ -14,6 +14,7 @@ import mlflow
 import mlflow.keras
 
 from configparser import ConfigParser
+
 path_config_file = os.getcwd().split('docrv2_sroie')[0] + 'docrv2_sroie/' + 'config.ini'
 common_variable = ConfigParser()
 common_variable.read(path_config_file)

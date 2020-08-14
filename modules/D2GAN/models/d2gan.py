@@ -35,6 +35,7 @@ from utils import image_utils
 from utils.image_utils import drawBoxes
 
 from configparser import ConfigParser
+
 path_config_file = os.getcwd().split('docrv2_sroie')[0] + 'docrv2_sroie/' + 'config.ini'
 common_variable = ConfigParser()
 common_variable.read(path_config_file)
@@ -77,7 +78,7 @@ class DetectionModel(BaseModel):
         optimizer = Adam(0.0002, 0.5)
 
         # We use a pre-trained VGG19 model to extract image features from the high resolution
-        # and the genrated high resolution images and minimize the mse between them
+        # and the generated high resolution images and minimize the mse between them
         self.vgg = self.build_vgg()
         self.vgg.trainable = False
         self.vgg.compile(loss='mse', optimizer=optimizer, metrics=['accuracy'])
@@ -119,7 +120,7 @@ class DetectionModel(BaseModel):
         self.combined.compile(loss=['binary_crossentropy', 'mse'], loss_weights=[1e-3, 1], optimizer=optimizer)
 
         # Load pretrained model
-        # 현재 generator만 load 하도록 설계되어 있음 (infernce용)
+        # 현재 generator만 load 하도록 설계되어 있음 (inference)
         # 차후에 continue learning을 위해서는 generator, combined, discriminator 등 모두 load 필요
         if self.config.model.use_pretrained is True:
             print('... load pretrained model')
@@ -129,7 +130,7 @@ class DetectionModel(BaseModel):
             else:
                 basemodelpath = self.config.model.pretrained_model_path
                 print('...... load generator')
-                self.generator.load_weights(basemodelpath + 'models_generator/data/model.5')
+                self.generator.load_weights(basemodelpath + 'models_generator/data/model.h5')
                 print('...... load discriminator')
                 self.discriminator.load_weights(basemodelpath + 'models_discriminator/data/model.h5')
                 print('...... load combined model')
@@ -137,8 +138,8 @@ class DetectionModel(BaseModel):
 
     def build_vgg(self):
         """
-		Builds a pre-trained VGG19 model that ouputs image featuers extracted at the third block of the model
-		"""
+        Builds a pre-trained VGG19 model that ouputs image featuers extracted at the third block of the model
+        """
 
         vgg = VGG19(include_top=False, input_shape=self.hr_shape)
 

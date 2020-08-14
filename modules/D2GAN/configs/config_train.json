@@ -4,16 +4,16 @@
 	},
 	"MLFLOW":{
 		"module_name":"D2GAN",
-		"exp_name":"[MS] d2gan train test 0002",
+		"exp_name":"[MS] d2gan train test 0001-0004",
 		"MAIN_URI":""
 	},
 	"META_DB":{
 		"load_existing_meta_db": false,
-		"name":"d2gan_train_0002_meta",
+		"name":"d2gan_train_0001_5_meta",
 		"path":"/media/myungsungkwak/msdisk/temp/",
 		"log":"/info.txt",
 		"description":"code check를 위한 meta db",
-		"dblist":"d2gan_train_0002",
+		"dblist":"d2gan_train_0001,d2gan_train_0002,d2gan_train_0003,d2gan_train_0004,d2gan_train_0005_100000",
 		"DB_MAIN_PATH":"/media/myungsungkwak/msdisk/docrv2_sroie/DB/db_main"
 	},
 	"data":{
@@ -36,11 +36,11 @@
 	},
 	"trainer":{
 		"name":"trainer.Trainer",
-		"num_epochs":100,
-		"num_steps":2,
+		"num_epochs":10000,
+		"num_steps":100,
 		"batch_size":8,
 		"validation_view_size":2,
-		"validation_steps":10,
+		"validation_steps":500,
 		"train_valid_ratio":0.9,
 		"verbose_training":true
 	},
