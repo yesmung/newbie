@@ -3,7 +3,7 @@
 #mlflow lib
 import mlflow
 import mlflow.pytorch
-
+import os
 from configparser import ConfigParser
 path_config_file = os.getcwd().split('docrv2_sroie')[0] + 'docrv2_sroie/' + 'config.ini'
 common_variable = ConfigParser()
