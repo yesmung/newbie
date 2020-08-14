@@ -26,6 +26,7 @@ def start_mlflow(config):
 		mf_trackinguri = MLFLOW_URI
 
 	mlflow.set_tracking_uri(mf_trackinguri)
+	#mlflow.set_tracking_uri(artifact_path+'mlruns')
 
 	try:
 		mlflow.create_expermiment(mf_experimentname, artifact_location=artifact_path)
@@ -42,5 +43,7 @@ def start_mlflow(config):
 
 	config.mlrun = mlrun
 	config.MLFLOW.artifact_path = artifact_path
+
+	print('*'*30,mlflow.get_artifact_uri())
 
 	return config
