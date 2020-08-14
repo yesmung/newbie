@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import re
 import six
 import math
 import lmdb
 import torch
 
-sys.path.append('/media/myungsungkwak/msdisk/docrv2_sroie/modules/database')
+from configparser import ConfigParser
+path_config_file = os.getcwd().split('docrv2_sroie')[0] + 'docrv2_sroie/' + 'config.ini'
+common_variable = ConfigParser()
+common_variable.read(path_config_file)
+import sys
+sys.path.append(common_variable['database']['module_path'])
 from db_util import *
 from db import *
+DB_MAIN_PATH = common_variable['database']['DB_MAIN_PATH']
 
 from natsort import natsorted
 from PIL import Image, ImageOps

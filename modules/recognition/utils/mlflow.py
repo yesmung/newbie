@@ -3,8 +3,19 @@
 #mlflow lib
 import mlflow
 import mlflow.pytorch
-MLFLOW_URI = 'sqlite:////home/dk/docr2/mlflow/mlflow.db'
+
+from configparser import ConfigParser
+path_config_file = os.getcwd().split('docrv2_sroie')[0] + 'docrv2_sroie/' + 'config.ini'
+common_variable = ConfigParser()
+common_variable.read(path_config_file)
+
+"""
+MLFLOW_URI = 'sqlite:////home/dk/docrv2/mlflow/mlflow.db'
 artifact_path = '/home/dk/docr2/mlflow/'
+"""
+MLFLOW_URI = common_variable['mlflow']['MLFLOW_URI']
+artifact_path = common_variable['mlflow']['artifact_path']
+
 
 def start_mlflow(config):
 	mf_experimentname = config.MLFLOW.module_name

@@ -3,12 +3,25 @@
 from base.base_data_loader import BaseDataLoader
 
 import os
-import sys
+
 import numpy as np
-sys.path.append('/home/dk/docr2/modules/database')
+"""
+sys.path.append('/home/dk/docrv2_sroie/modules/database')
 from db_util import *
 from db import *
-DB_MAIN_PATH = '/home/dk/docr2/DB/db_main'
+DB_MAIN_PATH = '/home/dk/docrv2_sroie/DB/db_main'
+"""
+
+from configparser import ConfigParser
+path_config_file = os.getcwd().split('docrv2_sroie')[0] + 'docrv2_sroie/' + 'config.ini'
+common_variable = ConfigParser()
+common_variable.read(path_config_file)
+import sys
+sys.path.append(common_variable['database']['module_path'])
+from db_util import *
+from db import *
+DB_MAIN_PATH = common_variable['database']['DB_MAIN_PATH']
+
 
 import mlflow
 import mlflow.pytorch

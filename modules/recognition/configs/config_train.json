@@ -5,7 +5,7 @@
   },
   "MLFLOW": {
     "module_name": "RECOG",
-    "exp_name":"[DK] initial recognition training",
+    "exp_name":"[DK] continue from 13323ad546b64044ac197e4003b6dfbf",
     "MAIN_URI": ""
   },
   "META_DB": {
@@ -23,7 +23,7 @@
     "name": "model.Model",
     "weight_path": "",
     "use_pretrained": true,
-    "pretrained_model_path": "",
+    "pretrained_model_path": "/home/dk/docrv2_sroie/mlflow/mlruns/1/13323ad546b64044ac197e4003b6dfbf/artifacts/model/data/best_accuracy/model.pth",
     "transformation": "None",
     "featureExtraction": "ResNet",
     "sequenceModeling": "BiLSTM",
@@ -42,9 +42,9 @@
   },
   "trainer":{
     "name": "trainer.Trainer",
-    "num_epochs": 100000,
+    "num_epochs": 10000,
     "num_steps": 100,
-    "batch_size": 16,
+    "batch_size": 48,
     "train_valid_ratio": 0.7,
     "valid_interval": 500,
     "verbose_training": true
