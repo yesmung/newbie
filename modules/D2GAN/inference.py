@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # CUDA_VISIBLE_DEVICES=1 python inference.py -c ./configs/config_inference.json
 
-from __future__ absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from data_loader.data_loader import DataLoader
 from models.d2gan import DetectionModel
