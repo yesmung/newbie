@@ -162,17 +162,17 @@ class Trainer(BaseTrain):
 						mlflow.keras.log_model(self.model.generator,"models_best_generator")
 						mlflow.log_metrics({'best_model_epoch':epoch}, step=epoch)
 
-			# log model
-			# mlflow.tensorflow.log_model(self.model.combined,"models_combined")
-			# mlflow.tensorflow.log_model(self.model.discriminator,"models_discriminator")
-			# mlflow.tensorflow.log_model(self.model.generator,"models_generator")
-			mlflow.keras.log_model(self.model.combined, artifact_path="models_combined")
-			mlflow.keras.log_model(self.model.discriminator, artifact_path="models_discriminator")
-			mlflow.keras.log_model(self.model.generator, artifact_path="models_generator")
+		# log model
+		# mlflow.tensorflow.log_model(self.model.combined,"models_combined")
+		# mlflow.tensorflow.log_model(self.model.discriminator,"models_discriminator")
+		# mlflow.tensorflow.log_model(self.model.generator,"models_generator")
+		mlflow.keras.log_model(self.model.combined, artifact_path="models_combined")
+		mlflow.keras.log_model(self.model.discriminator, artifact_path="models_discriminator")
+		mlflow.keras.log_model(self.model.generator, artifact_path="models_generator")
 
-			# create example at the last step
-			imgs_lr, imgs_hr = next(dataset_valid)
-			self.sample_images(epoch, imgs_lr, imgs_hr)
+		# create example at the last step
+		imgs_lr, imgs_hr = next(dataset_valid)
+		self.sample_images(epoch, imgs_lr, imgs_hr)
 
 	def sample_images(self, epoch, imgs_lr, imgs_hr):
 		spath = self.config.META_DB.path
