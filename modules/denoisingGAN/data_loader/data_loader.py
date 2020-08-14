@@ -28,9 +28,9 @@ from db_util import *
 from db import *
 
 from base.base_data_loader import BaseDataLoader
-from denoisingGAN.utils import dirs
-from denoisingGAN.utils import image_utils
-from denoisingGAN.utils.image_utils import drawBoxes, per_image_standardization
+from utils import dirs
+from utils import image_utils
+from utils.image_utils import drawBoxes, per_image_standardization
 
 DB_MAIN_PATH = common_variable['database']['DB_MAIN_PATH']
 
@@ -92,14 +92,14 @@ class DataLoader(BaseDataLoader):
         list_db_name, list_db_ref, list_db_env = get_dbs_from_meta_db(env=db_meta)
         envsm_main = get_env_summary(db_meta, prefix='__meta__/')
         mlflow.log_params(envsm_main)
-        mlflow.log_params('__meta__/-', '-' * 200)
+        mlflow.log_param('__meta__/-', '-' * 200)
 
         # get/set data db info
         for idx in range(len(list_db_name)):
             envsm = get_env_summary(list_db_env[idx], prefix='_' + list_db_name[idx] + '/')
             mlflow.log_params(envsm)
 
-            mlflow.log_params('_' + list_db_name[idx] + '/-', '-' * 200)
+            mlflow.log_param('_' + list_db_name[idx] + '/-', '-' * 200)
 
             print_env(list_db_env[idx], save=True, save_path=self.dbinfofile)
 
@@ -143,7 +143,7 @@ class DataLoader(BaseDataLoader):
         print("... split list")
         img_input_s = split_list(img_input,
                                  [train_valid_ratio, 1 - train_valid_ratio],
-                                 huffle=True,
+                                 shuffle=True,
                                  data_length=[epoch_size * step_size * batch_size, epoch_size * batch_size])
         img_target_s = split_list(img_target,
                                   [train_valid_ratio, 1 - train_valid_ratio],
@@ -176,7 +176,7 @@ class DataLoader(BaseDataLoader):
                         img1 = np.array(img1, dtype=np.float32) / 255.0
                         img1 = img1 * faintcorr + 255 - faintcorr
 
-                        bufflow = six.ByteIO()
+                        bufflow = six.BytesIO()
                         img1 = Image.fromarray(np.array(img1, dtype=np.uint8))
                         img1.save(bufflow, 'JPEG', quality=int(np.random.randint(1, high=20, size=1)[0]))
                         img1 = Image.open(bufflow).convert('RGB')

@@ -85,14 +85,14 @@ class Trainer(BaseTrain):
         dataset_train = self.train_data.as_numpy_iterator()
         dataset_valid = self.val_data.as_numpy_iterator()
 
-        batch_size = self.cofig.trainer.batch_size
+        batch_size = self.config.trainer.batch_size
         epoch_size = self.config.trainer.num_epochs
         steps_per_epoch = self.config.trainer.num_steps
         validation_steps = self.config.trainer.validation_steps
 
         # log model
         mlflow.keras.log_model(self.model.combined, artifact_path="models_combined")
-        mlflow.keras.log_model(self.modle.discriminator, artifact_path="models_discriminator")
+        mlflow.keras.log_model(self.model.discriminator, artifact_path="models_discriminator")
         mlflow.keras.log_model(self.model.generator, artifact_path="models_generator")
 
         start_time = datetime.datetime.now()
@@ -132,7 +132,7 @@ class Trainer(BaseTrain):
             # Train the generators
             g_loss = self.model.combined.train_on_batch([imgs_lr, imgs_hr], [valid, image_features])
 
-            elapsed_time = datetime.datetime.no() - start_time
+            elapsed_time = datetime.datetime.now() - start_time
 
             # log
             if epoch % validation_steps == 0:
@@ -176,6 +176,11 @@ class Trainer(BaseTrain):
         r, c = self.config.trainer.validation_view_size, 3
 
         fake_hr = self.model.generator.predict(imgs_lr)
+        # rescale images
+        imgs_lr = image_utils.rescale_images(imgs_lr)
+        fake_hr = image_utils.rescale_images(fake_hr)
+
+        imgs_hr = image_utils.rescale_maps(imgs_hr)
 
         titles = ['Input', 'Heatmap', 'Generated']
         fig, axs = plt.subplots(r, c)

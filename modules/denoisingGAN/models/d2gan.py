@@ -122,7 +122,7 @@ class DetectionModel(BaseModel):
         # 현재 generator만 load 하도록 설계되어 있음 (inference)
         # 차후에 continue learning을 위해서는 generator, combined, discriminator 등 모두 load 필요
         if self.config.model.use_pretrained is True:
-            print('... load pretrained model')용
+            print('... load pretrained model')
             if self.config.model.pretrained_model_path[-3:] == '.h5':
                 print('... load generator')
                 self.generator.load_weights(self.config.model.pretrained_model_path)
@@ -137,8 +137,8 @@ class DetectionModel(BaseModel):
 
     def build_vgg(self):
         """
-		Builds a pre-trained VGG19 model that ouputs image featuers extracted at the third block of the model
-		"""
+        Builds a pre-trained VGG19 model that ouputs image featuers extracted at the third block of the model
+        """
 
         vgg = VGG19(include_top=False, input_shape=self.hr_shape)
 
