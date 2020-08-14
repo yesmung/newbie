@@ -44,14 +44,15 @@ def close_env(env):
     env.crash()
 
 
-def register_db(env=None, db=None):
+def register_db(env=None, db=None, db_path=None):
     if env is None:
         env = open_env(path=DB_MAIN_PATH)
     db_data = env.open_db(str('db_data').encode())
     cache = {}
 
     db_name = get_value_by_key(db, 'name')
-    db_path = get_value_by_key(db, 'reference')
+    if db_path is None:
+        db_path = get_value_by_key(db, 'reference')
 
     cache[str(db_name).encode()] = db_path.encode()
     write_cache_to_db(env, db_data, cache)
@@ -871,11 +872,11 @@ def split_list(data, ratio=[0.7, 0.3], shuffle=True, set_data_length=True, data_
     return spdata
 
 
-def refresh_main_db(main_db_path=DB_BASE + '*'):
+def refresh_main_db(main_db_path=DB_BASE + '*', force_path=False):
     env = open_env(DB_MAIN_PATH)
     db = env.open_db(str('db_data').encode())
     dbnames = []
-    with env.begin(write=False) as txn:
+    with env.begin(write=False) as txn:+
         for key, value in txn.cursor(db):
             if os.path.isdir(value.decode()) == 0:
                 print('::: no data exist from db ::: ' + key.decode())
@@ -887,7 +888,10 @@ def refresh_main_db(main_db_path=DB_BASE + '*'):
         if os.path.basename(dbname) != 'db_main':
             try:
                 data_db = open_env_read(dbname)
-                register_db(db=open_env(dbname))
+                if force_path is True:
+                    register_db(db=open_env(dbname),db_path=dbname)
+                else:
+                    register_db(db=open_env(dbname))
                 dblist.append(os.path.basename(dbname))
             except:
                 print('--- no data exist from file system --- ' + dbname)
