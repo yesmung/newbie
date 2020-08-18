@@ -18,23 +18,26 @@ DB_PATH = common_variable['database']['DB_BASE']
 class DBDataLoader():
     def __init__(self, dataset_name, img_res=(256, 256)):
         self.dataset_name = dataset_name
-        self.img_res = img_res
+        self.img_res = (0,0,img_res[0],img_res[1])
 
         self.synthetic_db_name = 'style_synthetic_10000'
         self.data_db_name = dataset_name
 
     def load_data(self, domain, batch_size=1, is_testing=False):
 
-        oimgs = read_bulk_data_from_db(open_env(DB_PATH + domain),'img')
+        oimgs = read_bulk_data_from_db(open_env(DB_PATH + domain), 'img')
+        noImage = 1
         imgs = []
-        for im in oimgs:
-            imgs.append(np.array(im, dtype=np.float32))
+        for idx in range(noImage):
+            timg = oimgs[idx]
+            timg = timg.crop(self.img_res)
+            imgs.append(np.array(timg, dtype=np.float32)/127.5 - 1.)
 
-        imgs = np.array(imgs)/127.5 - 1.
+        imgs = np.array(imgs)
 
         return imgs
 
-    def load_batch(self, batch_size=1, is_testing=False):
+    def load_batch(self, batch_size=1, is_testing=False, n_batches=None):
         data_type = "train" if not is_testing else "val"
         #path_A = glob('./datasets/%s/%sA/*' % (self.dataset_name, data_type))
         env_A = open_env(DB_PATH + self.synthetic_db_name)
@@ -43,7 +46,11 @@ class DBDataLoader():
         env_B = open_env(DB_PATH + self.data_db_name)
         path_B = read_bulk_key_from_db(env_B, prefix='img')
 
-        self.n_batches = int(min(len(path_A), len(path_B)) / batch_size)
+        if n_batches is None:
+            self.n_batches = int(min(len(path_A), len(path_B)) / batch_size)
+        else:
+            self.n_batches = n_batches
+
         total_samples = self.n_batches * batch_size
 
         # Sample n_batches * batch_size from each path list so that model sees all
@@ -59,8 +66,11 @@ class DBDataLoader():
                 img_A = read_data_from_db_by_index(env_A,index=img_A)
                 img_B = read_data_from_db_by_index(env_B,index=img_B)
 
-                img_A = img_A.resize(self.img_res)
-                img_B = img_B.resize(self.img_res)
+                #img_A = img_A.resize(self.img_res)
+                #img_B = img_B.resize(self.img_res)
+
+                img_A = img_A.crop(self.img_res)
+                img_B = img_B.crop(self.img_res)
 
                 img_A = np.array(img_A, dtype=np.float32)
                 img_B = np.array(img_B, dtype=np.float32)

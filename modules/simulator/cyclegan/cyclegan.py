@@ -18,11 +18,15 @@ import numpy as np
 import os
 from tqdm import tqdm
 
+import tensorflow as tf
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
+
 class CycleGAN():
     def __init__(self, dataset_name):
         # Input shape
-        self.img_rows = 256
-        self.img_cols = 256
+        self.img_rows = 128
+        self.img_cols = 128
         self.channels = 3
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
 
@@ -124,18 +128,33 @@ class CycleGAN():
         # Image input
         d0 = Input(shape=self.img_shape)
 
+        """
         # Downsampling
         d1 = conv2d(d0, self.gf)
         d2 = conv2d(d1, self.gf*2)
         d3 = conv2d(d2, self.gf*4)
-        d4 = conv2d(d3, self.gf*8)
+        # d4 = conv2d(d3, self.gf*8)
 
         # Upsampling
-        u1 = deconv2d(d4, d3, self.gf*4)
-        u2 = deconv2d(u1, d2, self.gf*2)
+        # u1 = deconv2d(d4, d3, self.gf*4)
+        # u2 = deconv2d(u1, d2, self.gf*2)
+        u2 = deconv2d(d3, d2, self.gf * 2)
         u3 = deconv2d(u2, d1, self.gf)
-
         u4 = UpSampling2D(size=2)(u3)
+        """
+        # Downsampling
+        d1 = conv2d(d0, self.gf)
+        d2 = conv2d(d1, self.gf * 2)
+        d3 = conv2d(d2, self.gf * 2)
+        d4 = conv2d(d3, self.gf * 2)
+
+        # Upsampling
+        u1 = deconv2d(d4, d3, self.gf * 2)
+        u2 = deconv2d(u1, d2, self.gf * 2)
+        u3 = deconv2d(u2, d1, self.gf)
+        u4 = UpSampling2D(size=2)(u3)
+
+
         output_img = Conv2D(self.channels, kernel_size=4, strides=1, padding='same', activation='tanh')(u4)
 
         return Model(d0, output_img)
@@ -161,7 +180,7 @@ class CycleGAN():
 
         return Model(img, validity)
 
-    def train(self, epochs, batch_size=1, sample_interval=50):
+    def train(self, epochs, batch_size=1, sample_interval=50, n_batches=None):
 
         start_time = datetime.datetime.now()
 
@@ -169,9 +188,14 @@ class CycleGAN():
         valid = np.ones((batch_size,) + self.disc_patch)
         fake = np.zeros((batch_size,) + self.disc_patch)
 
-        for epoch in tqdm(range(epochs)):
-            for batch_i, (imgs_A, imgs_B) in enumerate(self.data_loader.load_batch(batch_size)):
+        for epoch in range(epochs):
+            if n_batches is None:
+                pbar = tqdm(total=5000//batch_size)
+            else:
+                pbar = tqdm(total=n_batches)
 
+            for batch_i, (imgs_A, imgs_B) in enumerate(self.data_loader.load_batch(batch_size, n_batches=n_batches)):
+                pbar.update()
                 # ----------------------
                 #  Train Discriminators
                 # ----------------------
@@ -206,6 +230,7 @@ class CycleGAN():
                 elapsed_time = datetime.datetime.now() - start_time
 
                 # Plot the progress
+                """
                 print ("[Epoch %d/%d] [Batch %d/%d] [D loss: %f, acc: %3d%%] [G loss: %05f, adv: %05f, recon: %05f, id: %05f] time: %s " \
                                                                         % ( epoch, epochs,
                                                                             batch_i, self.data_loader.n_batches,
@@ -215,10 +240,25 @@ class CycleGAN():
                                                                             np.mean(g_loss[3:5]),
                                                                             np.mean(g_loss[5:6]),
                                                                             elapsed_time))
+                                                                            """
 
                 # If at save interval => save generated image samples
-                if batch_i % sample_interval == 0:
+                if (batch_i+1) % (sample_interval-1) == 0:
+                    print(
+                        "[Epoch %d/%d] [Batch %d/%d] [D loss: %f, acc: %3d%%] [G loss: %05f, adv: %05f, recon: %05f, id: %05f] time: %s " \
+                        % (epoch, epochs,
+                           batch_i, self.data_loader.n_batches,
+                           d_loss[0], 100 * d_loss[1],
+                           g_loss[0],
+                           np.mean(g_loss[1:3]),
+                           np.mean(g_loss[3:5]),
+                           np.mean(g_loss[5:6]),
+                           elapsed_time))
                     self.sample_images(epoch, batch_i)
+                    pbar.close()
+        os.makedirs('models', exist_ok=True)
+        self.g_AB.save_weights("models/%s_AB.h5" % (self.dataset_name))
+        self.g_BA.save_weights("models/%s_BA.h5" % (self.dataset_name))
 
     def sample_images(self, epoch, batch_i):
         os.makedirs('images/%s' % self.dataset_name, exist_ok=True)
@@ -237,6 +277,7 @@ class CycleGAN():
         # Translate images to the other domain
         fake_B = self.g_AB.predict(imgs_A)
         fake_A = self.g_BA.predict(imgs_B)
+
         # Translate back to original domain
         reconstr_A = self.g_BA.predict(fake_B)
         reconstr_B = self.g_AB.predict(fake_A)
@@ -255,9 +296,10 @@ class CycleGAN():
                 axs[i, j].set_title(titles[j])
                 axs[i,j].axis('off')
                 cnt += 1
-        fig.savefig("images/%s/%d_%d.png" % (self.dataset_name, epoch, batch_i))
+        fig.savefig("images/%s/ep_%d.png" % (self.dataset_name, epoch))
         plt.close()
 
+        return gen_imgs
 
 if __name__ == '__main__':
     gan = CycleGAN()
