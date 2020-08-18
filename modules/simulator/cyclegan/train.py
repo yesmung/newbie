@@ -10,10 +10,11 @@ def worker(id):
     return
 
 if __name__ == '__main__':
+    """
     p = multiprocessing.Pool(processes=12)
     p.map(worker, list(range(360)))
     p.close()
     p.join()
     """
     for id in range(360):
-        worker(id)"""
+        worker(id)
