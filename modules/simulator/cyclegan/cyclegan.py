@@ -1,34 +1,37 @@
 from __future__ import print_function, division
 import scipy
 
-from keras.datasets import mnist
-from keras_contrib.layers.normalization.instancenormalization import InstanceNormalization
-from keras.layers import Input, Dense, Reshape, Flatten, Dropout, Concatenate
+#from keras.datasets import mnist
+#from keras_contrib.layers.normalization.instancenormalization import InstanceNormalization
+from tensorflow_addons.layers import InstanceNormalization
+from tensorflow.keras.layers import Input, Dense, Reshape, Flatten, Dropout, Concatenate
 from keras.layers import BatchNormalization, Activation, ZeroPadding2D
-from keras.layers.advanced_activations import LeakyReLU
-from keras.layers.convolutional import UpSampling2D, Conv2D
-from keras.models import Sequential, Model
-from keras.optimizers import Adam
+from tensorflow.keras.layers import LeakyReLU
+from tensorflow.keras.layers import UpSampling2D, Conv2D
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.optimizers import Adam
 import datetime
 import matplotlib.pyplot as plt
 import sys
-from data_loader import DataLoader
+from data_loader import DBDataLoader
 import numpy as np
 import os
+from tqdm import tqdm
 
 class CycleGAN():
-    def __init__(self):
+    def __init__(self, dataset_name):
         # Input shape
-        self.img_rows = 128
-        self.img_cols = 128
+        self.img_rows = 256
+        self.img_cols = 256
         self.channels = 3
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
 
         # Configure data loader
-        self.dataset_name = 'apple2orange'
-        self.data_loader = DataLoader(dataset_name=self.dataset_name,
-                                      img_res=(self.img_rows, self.img_cols))
-
+        self.dataset_name = dataset_name
+        #self.data_loader = DataLoader(dataset_name=self.dataset_name,
+        #                              img_res=(self.img_rows, self.img_cols))
+        self.data_loader = DBDataLoader(dataset_name=self.dataset_name,
+                                        img_res=(self.img_rows, self.img_cols))
 
         # Calculate output shape of D (PatchGAN)
         patch = int(self.img_rows / 2**4)
@@ -166,7 +169,7 @@ class CycleGAN():
         valid = np.ones((batch_size,) + self.disc_patch)
         fake = np.zeros((batch_size,) + self.disc_patch)
 
-        for epoch in range(epochs):
+        for epoch in tqdm(range(epochs)):
             for batch_i, (imgs_A, imgs_B) in enumerate(self.data_loader.load_batch(batch_size)):
 
                 # ----------------------
@@ -221,8 +224,11 @@ class CycleGAN():
         os.makedirs('images/%s' % self.dataset_name, exist_ok=True)
         r, c = 2, 3
 
-        imgs_A = self.data_loader.load_data(domain="A", batch_size=1, is_testing=True)
-        imgs_B = self.data_loader.load_data(domain="B", batch_size=1, is_testing=True)
+        imgs_A = self.data_loader.load_data(domain=self.dataset_name, batch_size=1, is_testing=True)
+        imgs_B = self.data_loader.load_data(domain="style_B", batch_size=1, is_testing=True)
+
+        #imgs_A = self.data_loader.load_data(domain="A", batch_size=1, is_testing=True)
+        #imgs_B = self.data_loader.load_data(domain="B", batch_size=1, is_testing=True)
 
         # Demo (for GIF)
         #imgs_A = self.data_loader.load_img('datasets/apple2orange/testA/n07740461_1541.jpg')
