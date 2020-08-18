@@ -17,10 +17,6 @@ def main():
 	args = get_args()
 	config = process_config(args.config)
 
-	# MEATA DB 생성
-	print("Create META DB and load data")
-	data_loader = DataLoader(config)
-
 	# META DB 생성
 	print("Create the data generator")
 	data_loader = DataLoader(config)
@@ -38,6 +34,9 @@ def main():
 	# save data to db
 	print("Save data to DB")
 	data_loader.save_to_db(predictions=predictions)
+
+	print("Save data as SROIE format")
+	data_loader.save_to_sroie(predictions=predictions)
 
 if __name__ == '__main__':
 	main()

@@ -22,7 +22,7 @@ from db_util import *
 from db import *
 DB_MAIN_PATH = common_variable['database']['DB_MAIN_PATH']
 
-
+from zipfile import ZipFile
 import mlflow
 import mlflow.pytorch
 
@@ -135,6 +135,46 @@ class DataLoader(BaseDataLoader):
                 update_data(datadb, index=widx, label=None, ref=None, char=words)
         else:
             print('prefix error')
+
+
+    def save_to_sroie(self, predictions=None):
+        # save to database
+        config = self.config
+
+        # 저장경로
+        path = config.inference.sorie_path
+        name = config.inference.data_db_name
+        os.makedirs(path+name,exist_ok=True)
+        filenames = read_all_data_from_meta_db(self.db_meta,'ref')
+
+        # sort data
+        indexmat = []
+        for pidx in predictions:
+            indexmat.append(int(pidx[0]))
+        indexnum = list(set(indexmat))
+
+        wordbag = [[]] * (np.max(indexnum)+1)
+        accvvals = [[]] * (np.max(indexnum)+1)
+        for pidx in predictions:
+            wordbag[int(pidx[0])] = wordbag[int(pidx[0])] + [str(pidx[1])]
+            accvvals[int(pidx[0])] = accvvals[int(pidx[0])] + [str(pidx[2].cpu().numpy())]
+
+        # save file
+        file_paths = []
+        for widx, words in enumerate(wordbag):
+            savefilepath = os.path.join(path, name, filenames[widx]+'.txt')
+            file_paths.append(savefilepath)
+            f = open(savefilepath, "w")
+            for wd in words:
+                f.write(wd+'\n')
+            f.close()
+
+        # zip file
+        print(os.path.join(path, name, 'submit.zip'))
+        with ZipFile(os.path.join(path, name, 'submit.zip'), 'w') as zip:
+            for file in file_paths:
+                zip.write(file)
+
 
 def textfilter(text):
     startind = len(text)
