@@ -9,12 +9,12 @@
 	},
 	"META_DB":{
 		"load_existing_meta_db": false,
-		"name":"d2gan_testrun_1",
+		"name":"d2gan_inference_0004_meta",
 		"path":"/media/myungsungkwak/msdisk/temp/",
 		"log":"/info.txt",
 		"description":"inference를 위한 meta db",
-		"dblist":"db_scan_hospital_inference_test-rotationGAN-denoisingGAN",
-		"DB_MAIN_PATH":""
+		"dblist":"task1_test_data_db_sample,task1_test_data_db_sample2",
+		"DB_MAIN_PATH":"/media/myungsungkwak/msdisk/docrv2_sroie/DB/db_main"
 	},
 	"data":{
 		"image_size_h":128,
@@ -28,8 +28,8 @@
 	"model":{
 		"name":"model.d2gan",
 		"descale_factor":2,
-		"weight_path":"/media/myungsung/msdisk/pretrained/vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5",
-		"pretrained_model_path":"/media/myungsung/msdisk/MLFLOW_SQLITE/artifacts/models_generator/data/model.h5",
+		"weight_path":"None",
+		"pretrained_model_path":"/media/myungsungkwak/msdisk/MLFLOW_SQLITE/ab383c88d9fb4da5b8a26bfd84c9538d/artifacts/models_best_generator/data/model.h5",
 		"use_pretrained":true,
 		"optimizer":"adam",
 		"loss":"mse"
@@ -46,9 +46,10 @@
 	},
 	"inference":{
 		"create_new_data_db":true,
-		"data_db_path":"/SAM/jupyter/DK/DB/",
-		"data_db_name":"db_scan_hospital_inference_test-rotationGAN-denoisingGAN",
-		"data_db_description":"db_scan_hospital_inference_test-rotationGAN-denoisingGAN",
+		"data_db_path":"/media/myungsungkwak/msdisk/temp/",
+		"sroie_path":"/media/myungsungkwak/msdisk/sroie/task1/",
+		"data_db_name":"d2gan_inference_0004_result",
+		"data_db_description":"d2gan_inference_0004_result db",
 		"create_preview_data_db":true,
 		"preview_db_postfix":"_preview_detection"
 	}

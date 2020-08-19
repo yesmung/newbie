@@ -112,7 +112,7 @@ class DataLoader(BaseDataLoader):
     def get_data_online(self, batch_size=8, size=512, distanceRatio=[1.5, 1], sratio=[5, 1, 1, 5], amp=[1, 1],
                         descale=2, make_channel=False, from_config=False, use_otsu=False):
         # get data from config
-        if from_config == True:
+        if from_config:
             size = self.config.data.mask_sampling_size
             distanceRatio = np.array(self.config.data.mask_dist.split(','), dtype=np.float32)
             sratio = np.array(self.config.data.mask_asym_ratio.split(','), dtype=np.float32)
@@ -130,7 +130,7 @@ class DataLoader(BaseDataLoader):
                                                                        sy=sratio[3], amp=amp[1])
 
         # set params
-        inputsize = (self.config.data.image_size_h, self.config.data.image_size_w)
+        # inputsize = (self.config.data.image_size_h, self.config.data.image_size_w)
         batch_size = self.config.trainer.batch_size
         epoch_size = self.config.trainer.num_epochs
         step_size = self.config.trainer.num_steps
@@ -157,7 +157,7 @@ class DataLoader(BaseDataLoader):
                              shuffle=True,
                              data_length=[epoch_size * step_size * batch_size, epoch_size * batch_size])
 
-        if make_channel == True:
+        if make_channel:
             convChannel = 3
         else:
             convChannel = 2

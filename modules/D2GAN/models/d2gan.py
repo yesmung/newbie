@@ -25,9 +25,13 @@ import numpy as np
 import scipy
 import matplotlib.pyplot as plt
 import cv2
+import glob
 
 from PIL import Image
 from tqdm import tqdm
+
+from shutil import make_archive
+from shutil import move
 
 # from craft-keras
 from utils import tools
@@ -245,13 +249,13 @@ class DetectionModel(BaseModel):
             img_array = tf.expand_dims(img_array, 0)
             return img_array
 
-        for idx in tqdm(range(len(images))):
-            tfimage = compute_input(images[idx])
+        for image in images:
+            # tfimage = compute_input(images[idx])
+            img_array = image_utils.per_image_standardization(image)
 
-            box_pred = self.generator.predict(tfimage)
-
+            box_pred = self.generator.predict(img_array)
             boxes_pred.append(box_pred)
-            boxes_char.append(image_utils.getTextBoxes(bxo_pred,
+            boxes_char.append(image_utils.getTextBoxes(box_pred,
                                                        text_threshold=self.config.detect.char_text_threshold,
                                                        descale=self.config.model.descale_factor)[0])
             boxes_word.append(image_utils.getBoxes(box_pred,
@@ -262,6 +266,31 @@ class DetectionModel(BaseModel):
                                                    descale=self.config.model.descale_factor)[0])
 
         return boxes_char, boxes_word, boxes_pred
+
+    def save_to_sroie(self, predictions=None, db_meta=None):
+
+        config = self.config
+        db_meta = db_meta
+
+        sroie_path = config.inference.sroie_path
+        os.makedirs(sroie_path, exist_ok=True)
+
+        img_filename_not_extension = read_bulk_data_from_meta_db(db_meta, 'ref')[0]
+
+        # txt file
+        imgidx = 0
+        for axis_table in tqdm(predictions):
+            txt_file_path = os.path.join(sroie_path, img_filename_not_extension[imgidx] + ".txt")
+            axis_table.to_csv(txt_file_path, index=False, header=None, sep=',')
+            imgidx = imgidx + 1
+
+        # archiving
+        arch_name = "submit"
+        try:
+            make_archive(arch_name, 'zip', sroie_path)
+            move(os.path.join(os.getcwd(), arch_name+".zip"), sroie_path)
+        except Exception as e:
+            pass
 
     def inference_and_save_to_db(self, data_loader, save_image=True, use_maindb=True):
 
@@ -275,17 +304,20 @@ class DetectionModel(BaseModel):
         db_meta = data_loader.db_meta
 
         # get label reference data
-        refs = read_all_data_from_meta_db(db_meta, 'ref')
-        labels = read_all_data_from_meta_db(db_meta, 'label')
+        # refs = read_all_data_from_meta_db(db_meta, 'ref')
+        # labels = read_all_data_from_meta_db(db_meta, 'label')
+
+        # save only axis list each image's table char(x1~y4)
+        axis_only_table_char_list = []
 
         path = config.inference.data_db_path
         name = config.inference.data_db_name
 
         # DB load
-        if config.inference.create_new_data_db == True:
+        if config.inference.create_new_data_db:
             # create empty db
             description = config.inference.data_db_description
-            dtadb = create_data_db(path=path, name=name, description=description, data_class='INFERENCE')
+            datadb = create_data_db(path=path, name=name, description=description, data_class='INFERENCE')
         else:
             datadb = open_env(path + name)
 
@@ -377,12 +409,17 @@ class DetectionModel(BaseModel):
             # update to db
             update_data(previewdb, index=imgidx, label='detection_d2gan_preview', image=theimage_boxed_char, ref=None)
 
+            # save to sroie format
+            axis_only_table_char = table_char.iloc[0:table_char.shape[0], 0:8]
+            axis_only_table_char = axis_only_table_char.astype(int)
+            axis_only_table_char_list.append(axis_only_table_char)
+
             imgidx = imgidx + 1
             pbar.update(1)
 
         # DATA DB 시간 업데이트
         update_time_stemp(datadb)
-        print_env(dataedb)
+        print_env(datadb)
 
         update_time_stemp(previewdb)
         print_env(previewdb)
@@ -391,4 +428,4 @@ class DetectionModel(BaseModel):
         db_main = register_db(env=db_meta, db=datadb)
         db_main = register_db(env=db_meta, db=previewdb)
 
-        return datadb
+        return datadb, axis_only_table_char_list

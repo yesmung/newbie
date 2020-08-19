@@ -10,26 +10,33 @@ from trainers.trainer import Trainer
 from utils import tools
 from utils.args import get_args
 from utils.config import process_config
-from utils.dir import create_dirs
+from utils.dirs import create_dirs
 
 import os
 import numpy as np
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+
 def main():
-	args = get_args()
-	config = process_config(args.config)
+    args = get_args()
+    config = process_config(args.config)
 
-	# MEATA DB 생성
-	print("Create META DB and load data")
-	data_loader = DataLoader(config)
+    # META DB 생성
+    print("Create META DB and load data")
+    data_loader = DataLoader(config)
 
-	# MODEL 생성
-	print("Load the model")
-	model = DetectionModel(config)
+    # MODEL 생성
+    print("Load the model")
+    model = DetectionModel(config)
 
-	# PREDICT
-	print("Perform predictions and save to DB")
-	db = model.inference_and_save_to_db(data_loader, save_image=False)
+    # PREDICT (db)
+    print("Perform predictions and save to DB")
+    db, axis_only_table_char_list = model.inference_and_save_to_db(data_loader, save_image=True)
+
+    print("Save axis as text files and archiving in to {}".format(config.inference.sroie_path))
+    model.save_to_sroie(predictions=axis_only_table_char_list, db_meta=data_loader.db_meta)
+
 
 if __name__ == '__main__':
-	main()
+    main()
