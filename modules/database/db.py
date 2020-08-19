@@ -789,7 +789,8 @@ def read_all_data_from_meta_db(env, prefix, overridelabel=None):
     db_names, db_paths, dbs = get_dbs_from_meta_db(env=env)
     data = []
     for idx, data_env in enumerate(dbs):
-        exdata = read_bulk_key_from_db(env=data_env, prefix=prefix)
+        # exdata = read_bulk_key_from_db(env=data_env, prefix=prefix)
+        exdata = read_bulk_data_from_db(env=data_env, prefix=prefix)
         if prefix == 'label' and overridelabel is not None:
             exdata = [overridelabel[idx]] * len(exdata)
         data.extend(exdata)
