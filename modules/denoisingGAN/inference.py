@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# CUDA_VISIBLE_DEVICES=1 python inference.py -c ./configs/config_inference.json
+# OMP_NUM_THREADS=2 CUDA_VISIBLE_DEVICES=-1 python inference.py -c ./configs/config_inference.json
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -10,7 +10,7 @@ from trainers.trainer import Trainer
 from utils import tools
 from utils.args import get_args
 from utils.config import process_config
-from utils.dir import create_dirs
+from utils.dirs import create_dirs
 
 import os
 import numpy as np

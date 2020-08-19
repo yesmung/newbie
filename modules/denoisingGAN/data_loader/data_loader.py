@@ -30,7 +30,7 @@ from db import *
 from base.base_data_loader import BaseDataLoader
 from utils import dirs
 from utils import image_utils
-from utils.image_utils import drawBoxes, per_image_standardization
+from utils.image_utils import drawBoxes, per_image_standardization, per_image_destandardization
 
 DB_MAIN_PATH = common_variable['database']['DB_MAIN_PATH']
 
@@ -221,6 +221,13 @@ class DataLoader(BaseDataLoader):
         db_meta = self.db_meta
 
         imgs = read_all_data_from_meta_db(db_meta, 'img')
+        """
+        # resize image
+        for i, im in enumerate(imgs):
+            imsize = im.size
+            imgs[i] = im.resize((imsize[0]//2,imsize[1]//2))
+        """
+        print(imgs)
         image_array = img2array(imgs)
 
         dataset_inference = []
