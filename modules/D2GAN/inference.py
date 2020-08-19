@@ -32,10 +32,10 @@ def main():
 
     # PREDICT (db)
     print("Perform predictions and save to DB")
-    db, axis_only_table_char_list = model.inference_and_save_to_db(data_loader, save_image=True)
+    db, coordinates_only_table_word_list = model.inference_and_save_to_db(data_loader, save_image=True)
 
-    print("Save axis as text files and archiving in to {}".format(config.inference.sroie_path))
-    model.save_to_sroie(predictions=axis_only_table_char_list, db_meta=data_loader.db_meta)
+    print("Save coordinates as text files and archiving in to {}".format(config.inference.sroie_path))
+    model.save_to_sroie(predictions=coordinates_only_table_word_list, db_meta=data_loader.db_meta)
 
 
 if __name__ == '__main__':

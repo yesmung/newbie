@@ -307,8 +307,8 @@ class DetectionModel(BaseModel):
         # refs = read_all_data_from_meta_db(db_meta, 'ref')
         # labels = read_all_data_from_meta_db(db_meta, 'label')
 
-        # save only axis list each image's table char(x1~y4)
-        axis_only_table_char_list = []
+        # save word coordinates list each image's table word
+        coordinates_only_table_word_list = []
 
         path = config.inference.data_db_path
         name = config.inference.data_db_name
@@ -385,7 +385,7 @@ class DetectionModel(BaseModel):
                         # save box coordinate
                         save_box = [thebox[0][0], thebox[0][1], thebox[2][0], thebox[2][1]]
                         wcell = pd.DataFrame(
-                            {'x1': [save_box[0]], 'y1': [save_box[1]], 'x2': [save_box[2]], 'y3': [save_box[3]],
+                            {'x1': [save_box[0]], 'y1': [save_box[1]], 'x2': [save_box[2]], 'y2': [save_box[3]],
                              'word': ['N.I.'], 'index': [int(idx)]})
                         table_word = table_word.append(wcell, ignore_index=True)
                 except:
@@ -409,10 +409,18 @@ class DetectionModel(BaseModel):
             # update to db
             update_data(previewdb, index=imgidx, label='detection_d2gan_preview', image=theimage_boxed_char, ref=None)
 
-            # save to sroie format
-            axis_only_table_char = table_char.iloc[0:table_char.shape[0], 0:8]
-            axis_only_table_char = axis_only_table_char.astype(int)
-            axis_only_table_char_list.append(axis_only_table_char)
+            # save to x1~y4 coordinates from table_word
+            coordinates_only_table_word = table_word.copy()
+            coordinates_only_table_word.rename(columns={'x2': 'x3', 'y2': 'y3'}, inplace=True)
+            coordinates_only_table_word['x2'] = coordinates_only_table_word['x3']
+            coordinates_only_table_word['y2'] = coordinates_only_table_word['y1']
+            coordinates_only_table_word['x4'] = coordinates_only_table_word['x1']
+            coordinates_only_table_word['y4'] = coordinates_only_table_word['y3']
+            coordinates_only_table_word = coordinates_only_table_word[['x1','y1','x2','y2','x3','y3','x4','y4','word','index']]
+            coordinates_only_table_word = coordinates_only_table_word.iloc[0:coordinates_only_table_word.shape[0], 0:8]
+            coordinates_only_table_word = coordinates_only_table_word.astype(int)
+
+            coordinates_only_table_word_list.append(coordinates_only_table_word)
 
             imgidx = imgidx + 1
             pbar.update(1)
@@ -428,4 +436,4 @@ class DetectionModel(BaseModel):
         db_main = register_db(env=db_meta, db=datadb)
         db_main = register_db(env=db_meta, db=previewdb)
 
-        return datadb, axis_only_table_char_list
+        return datadb, coordinates_only_table_word_list
