@@ -28,7 +28,8 @@ class CycleGAN():
         self.img_rows = 128
         self.img_cols = 128
         self.channels = 3
-        self.img_shape = (self.img_rows, self.img_cols, self.channels)
+        #self.img_shape = (self.img_rows, self.img_cols, self.channels)
+        self.img_shape = (None, None, self.channels)
 
         # Configure data loader
         self.dataset_name = dataset_name
