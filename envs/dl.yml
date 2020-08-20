@@ -106,7 +106,6 @@ dependencies:
   - urllib3=1.25.9=py_0
   - wcwidth=0.2.5=py_0
   - xeus=0.23.10=h4d8c418_0
-  - xeus-python=0.6.13=py36hdb11119_0
   - xz=5.2.5=h7b6447c_0
   - zeromq=4.3.2=he6710b0_2
   - zipp=3.1.0=py_0
@@ -387,7 +386,6 @@ dependencies:
     - texttable==1.6.2
     - tf-estimator-nightly==2.3.0.dev2020042701
     - tf-keras-vis==0.2.1
-    - tflite-runtime==2.1.0.post1
     - tfrecord==1.10
     - thinc==7.4.0
     - toml==0.10.1

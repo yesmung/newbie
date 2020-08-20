@@ -88,6 +88,79 @@ def get_asymmetric_gaussian_heatmap(size=512, distanceRatio=3.34, sx=1, sy=1, am
     return g.clip(0, 255).astype('float32')
 
 
+def compute_word_maps(heatmap, image_height, image_width, lines, heatmap_affinity=None, descale=2, make_channel=False):
+    if heatmap_affinity is None:
+        heatmap_affinity = heatmap
+
+    textmap = np.zeros((image_height // descale, image_width // descale)).astype('float32')
+    #linkmap = np.zeros((image_height // descale, image_width // descale)).astype('float32')
+
+    src = np.array([[0, 0], [heatmap.shape[1], 0], [heatmap.shape[1], heatmap.shape[0]], [0, heatmap.shape[0]]]).astype(
+        'float32')
+
+    for line in lines:
+        previous_link_points = False
+
+        for lind in range(len(line)):
+            lvals = line[lind]
+            paddx = 3
+            paddy = 1
+            x1 = lvals[0] - paddx
+            y1 = lvals[1] - paddy
+
+            x2 = lvals[2] + paddx
+            y2 = lvals[3] - paddy
+
+            x3 = lvals[4] + paddx
+            y3 = lvals[5] + paddy
+
+            x4 = lvals[6] - paddx
+            y4 = lvals[7] + paddy
+            c = lvals[8]
+
+            if previous_link_points is False:
+                rx1 = x1
+                rx2 = x2
+                rx3 = x3
+                rx4 = x4
+                ry1 = y1
+                ry2 = y2
+                ry3 = y3
+                ry4 = y4
+
+            rx1 = np.min([x1, rx1])
+            ry1 = np.min([y1, ry1])
+
+            rx2 = np.max([x2, rx2])
+            ry2 = np.min([y2, ry2])
+
+            rx3 = np.max([x3, rx3])
+            ry3 = np.max([y3, ry3])
+
+            rx4 = np.min([x4, rx4])
+            ry4 = np.max([y4, ry4])
+
+            if c == ' ' and previous_link_points == True:
+                previous_link_points = False
+                character_points = np.array([[rx1, ry1], [rx2, ry2], [rx3, ry3], [rx4, ry4]]).astype(
+                    'float32') / descale
+
+                MA = cv2.getPerspectiveTransform(
+                    src=src,
+                    dst=character_points,
+                )
+
+                textmap += cv2.warpPerspective(heatmap, MA, dsize=(textmap.shape[1], textmap.shape[0])).astype(
+                    'float32')
+
+                continue
+            previous_link_points = True
+
+    emptymap = np.zeros(textmap.shape)
+    return np.concatenate([emptymap[..., np.newaxis], textmap[..., np.newaxis], emptymap[..., np.newaxis]],
+                            axis=2).clip(0, 255)
+
+
 def compute_maps(heatmap, image_height, image_width, lines, heatmap_affinity=None, descale=2, make_channel=False):
     if heatmap_affinity is None:
         heatmap_affinity = heatmap

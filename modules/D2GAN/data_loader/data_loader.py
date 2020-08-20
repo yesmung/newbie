@@ -119,6 +119,10 @@ class DataLoader(BaseDataLoader):
             amp = np.array(self.config.data.mask_amp.split(','), dtype=np.float32)
             descale = self.config.model.descale_factor
             use_otsu = self.config.data.otsu
+            try:
+                word_mode = self.config.data.word_mode
+            except:
+                word_mode = False
 
         # create meta db
         db_meta = self.db_meta
@@ -162,6 +166,8 @@ class DataLoader(BaseDataLoader):
         else:
             convChannel = 2
 
+
+
         def make_tfdataset(imgs, coods):
             no_data = len(coods)
 
@@ -195,13 +201,19 @@ class DataLoader(BaseDataLoader):
                     img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
                     ret, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
                     img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-
-                imap = image_utils.compute_maps(heatmap=heatmap,
-                                                image_height=img.shape[0],
-                                                image_width=img.shape[1],
-                                                lines=[lines], heatmap_affinity=heatmap_affinity,
-                                                descale=descale, make_channel=make_channel)
-                imap = imap - 0.5
+                if word_mode is False:
+                    imap = image_utils.compute_maps(heatmap=heatmap,
+                                                    image_height=img.shape[0],
+                                                    image_width=img.shape[1],
+                                                    lines=[lines], heatmap_affinity=heatmap_affinity,
+                                                    descale=descale, make_channel=make_channel)
+                else:
+                    imap = image_utils.compute_word_maps(heatmap=heatmap,
+                                                         image_height=img.shape[0],
+                                                         image_width=img.shape[1],
+                                                         lines=[lines], heatmap_affinity=heatmap_affinity,
+                                                         descale=descale, make_channel=make_channel)
+                # imap = imap - 0.5
 
                 return img, imap
 
