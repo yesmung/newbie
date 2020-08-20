@@ -221,18 +221,19 @@ class DataLoader(BaseDataLoader):
         db_meta = self.db_meta
 
         imgs = read_all_data_from_meta_db(db_meta, 'img')
+
         """
         # resize image
         for i, im in enumerate(imgs):
             imsize = im.size
             imgs[i] = im.resize((imsize[0]//2,imsize[1]//2))
         """
-        print(imgs)
         image_array = img2array(imgs)
 
         dataset_inference = []
         for el in image_array:
-            dataset_inference.append(cv2.cvtColor(cv2.cvtColor(el, cv2.COLOR_RGB2GRAY), cv2.COLOR_GRAY2RGB))
+            #dataset_inference.append(cv2.cvtColor(cv2.cvtColor(el, cv2.COLOR_RGB2GRAY), cv2.COLOR_GRAY2RGB))
+            dataset_inference.append(el)
         return dataset_inference
 
     def save_to_db(self, prediction=None, data=None):
