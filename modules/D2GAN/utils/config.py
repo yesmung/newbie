@@ -4,6 +4,7 @@ import os
 import time
 import json
 from dotmap import DotMap
+from datetime import datetime
 
 
 def get_config_from_json(json_file):
@@ -33,6 +34,7 @@ def process_config(json_file):
                                                         config.exp.name, "logs/")
     config.callbacks.checkpoint_dir = os.path.join("experiments", time.strftime("%Y-%m-%d", time.localtime()),
                                                    config.exp.name, "checkpoints/")
+    config.META_DB.name = config.META_DB.name + str(datetime.now()).replace('-','').replace(':','').replace('.','').replace(' ','')
     return config
 
 

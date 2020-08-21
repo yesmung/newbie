@@ -51,7 +51,6 @@ from db import *
 
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
-
 class DetectionModel(BaseModel):
     def __init__(self, config):
         super(DetectionModel, self).__init__(config)
@@ -330,18 +329,52 @@ class DetectionModel(BaseModel):
 
         imgidx = 0
         for image in images:
-            img_array = image_utils.per_image_standardization(image)
+            # split images if large
+            oimsize = image.shape
+            #print(oimsize)
 
-            box_pred = self.generator.predict(img_array)
-            boxes_char = image_utils.getTextBoxes(box_pred,
-                                                  text_threshold=self.config.detect.char_text_threshold,
+            if image.shape[2] > 2000:
+                #img_array, numx, numy, spsize = image_utils.montage_img(image[0,:], spsize=(1000, 2000))
+                tim = image_utils.per_image_standardization(image)
+                img_array, numx, numy, spsize = image_utils.montage_img(tim[0, :], spsize=(1000, 2000))
+            else:
+                img_array = image_utils.per_image_standardization(image)
+
+            if image.shape[2] > 2000:
+                box_out = np.ones(
+                    (img_array.shape[0], img_array.shape[1] // 2, img_array.shape[2] // 2, img_array.shape[3])) * 255
+                for ii in range(img_array.shape[0]):
+
+                    bx = self.generator.predict(np.expand_dims(img_array[ii,],axis=0))
+                    box_out[ii,] = np.array(bx)[0,]
+
+                box_pred = image_utils.merge_montage(box_out, numx, numy, imsize=(int(np.floor(oimsize[1]/2)), int(np.floor(oimsize[2]/2))), spsize=(1000//2, 2000//2))
+                box_pred = np.expand_dims(box_pred,axis=0)
+
+                #np.save('/home/dk/docrv2_sroie/temp.npy', [box_pred], allow_pickle=True)
+                #print(box_pred.shape)
+            else:
+                box_pred = self.generator.predict(img_array)
+
+
+            if self.config.data.word_mode is True:
+                #print(box_pred.shape)
+                box_pred[:,:,:,0] = box_pred[:,:,:,1]
+                #np.save('/home/dk/docrv2_sroie/temp.npy',[box_pred],allow_pickle=True)
+                boxes_char = image_utils.getTextBoxes(box_pred,
+                                                      text_threshold=self.config.detect.char_text_threshold,
+                                                      dscale=self.config.model.descale_factor)[0]
+                boxes_word = []
+            else:
+                boxes_char = image_utils.getTextBoxes(box_pred,
+                                                      text_threshold=self.config.detect.char_text_threshold,
+                                                      dscale=self.config.model.descale_factor)[0]
+                boxes_word = image_utils.getBoxes(box_pred,
+                                                  detection_threshold=self.config.detect.word_detection_threshold,
+                                                  link_threshold=self.config.detect.word_link_threshold,
+                                                  text_threshold=self.config.detect.word_text_threshold,
+                                                  size_threshold=self.config.detect.word_size_threshold,
                                                   dscale=self.config.model.descale_factor)[0]
-            boxes_word = image_utils.getBoxes(box_pred,
-                                              detection_threshold=self.config.detect.word_detection_threshold,
-                                              link_threshold=self.config.detect.word_link_threshold,
-                                              text_threshold=self.config.detect.word_text_threshold,
-                                              size_threshold=self.config.detect.word_size_threshold,
-                                              dscale=self.config.model.descale_factor)[0]
 
             theimage_pil = Image.fromarray(np.array(image, dtype=np.uint8)[0,])
             roi_char = []

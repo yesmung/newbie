@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# CUDA_VISIBLE_DEVICES=1 python inference.py -c ./configs/config_inference.json
+# CUDA_VISIBLE_DEVICES=-1 python inference.py -c ./configs/config_inference.json
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -15,7 +15,7 @@ from utils.dirs import create_dirs
 import os
 import numpy as np
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 def main():
@@ -34,8 +34,8 @@ def main():
     print("Perform predictions and save to DB")
     db, coordinates_only_table_word_list = model.inference_and_save_to_db(data_loader, save_image=True)
 
-    print("Save coordinates as text files and archiving in to {}".format(config.inference.sroie_path))
-    model.save_to_sroie(predictions=coordinates_only_table_word_list, db_meta=data_loader.db_meta)
+    # print("Save coordinates as text files and archiving in to {}".format(config.inference.sroie_path))
+    # model.save_to_sroie(predictions=coordinates_only_table_word_list, db_meta=data_loader.db_meta)
 
 
 if __name__ == '__main__':

@@ -30,6 +30,8 @@ from base.base_data_loader import BaseDataLoader
 from utils import dirs
 from utils import image_utils
 from utils.image_utils import drawBoxes
+from datetime import datetime
+
 
 DB_MAIN_PATH = common_variable['database']['DB_MAIN_PATH']
 

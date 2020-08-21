@@ -9,12 +9,12 @@
 	},
 	"META_DB":{
 		"load_existing_meta_db": false,
-		"name":"d2gan_inference_0004_meta",
-		"path":"/media/myungsungkwak/msdisk/temp/",
+		"name":"d2gan_inference_11",
+		"path":"/home/dk/docrv2_sroie/temp/",
 		"log":"/info.txt",
-		"description":"inference를 위한 meta db",
-		"dblist":"task1_test_data_db_sample,task1_test_data_db_sample2",
-		"DB_MAIN_PATH":"/media/myungsungkwak/msdisk/docrv2_sroie/DB/db_main"
+		"description":"d2gan inference",
+		"dblist":"raw_test_task12_10img",
+		"DB_MAIN_PATH":""
 	},
 	"data":{
 		"image_size_h":128,
@@ -23,13 +23,14 @@
 		"mask_asym_ratio":"4,1,1,4",
 		"mask_amp":"1,1",
 		"mask_dist":"1,1",
-		"otsu":false
+		"otsu":false,
+		"word_mode":true
 	},
 	"model":{
 		"name":"model.d2gan",
 		"descale_factor":2,
 		"weight_path":"None",
-		"pretrained_model_path":"/media/myungsungkwak/msdisk/MLFLOW_SQLITE/ab383c88d9fb4da5b8a26bfd84c9538d/artifacts/models_best_generator/data/model.h5",
+		"pretrained_model_path":"/home/dk/docrv2_sroie/mlflow/7e02d85c30e141fb95437e228ec892e9/artifacts/models_best_generator/data/model.h5",
 		"use_pretrained":true,
 		"optimizer":"adam",
 		"loss":"mse"
@@ -46,10 +47,10 @@
 	},
 	"inference":{
 		"create_new_data_db":true,
-		"data_db_path":"/media/myungsungkwak/msdisk/temp/",
-		"sroie_path":"/media/myungsungkwak/msdisk/sroie/task1/",
-		"data_db_name":"d2gan_inference_0004_result",
-		"data_db_description":"d2gan_inference_0004_result db",
+		"data_db_path":"/home/dk/docrv2_sroie/temp/",
+		"sroie_path":"/home/dk/docrv2_sroie/temp/sroie/task1/",
+		"data_db_name":"raw_test_task12_10img_1",
+		"data_db_description":"raw_test_task12_10img d2gan",
 		"create_preview_data_db":true,
 		"preview_db_postfix":"_preview_detection"
 	}

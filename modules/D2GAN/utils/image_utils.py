@@ -88,12 +88,48 @@ def get_asymmetric_gaussian_heatmap(size=512, distanceRatio=3.34, sx=1, sy=1, am
     return g.clip(0, 255).astype('float32')
 
 
+def montage_img(im, spsize=(1000,2000)):
+    imsize = (im.shape[1],im.shape[0])
+    numy = int(np.ceil(imsize[1]/spsize[1]))+1
+    numx = int(np.ceil(imsize[0]/spsize[0]))+1
+    patchim = np.zeros((numx*numy, spsize[1],spsize[0],3))
+    largeim = np.zeros((spsize[1]*numx, spsize[0]*numy, 3))
+    largeim[0:imsize[1],0:imsize[0],:] = np.array(im)
+
+    ind = 0
+    # split
+    # plt.subplots(numy-1, numx-1,figsize=(10,10))
+    for yidx in range(numx-1):
+        for xidx in range(numy-1):
+            patchim[ind,:] = largeim[yidx*spsize[1]:(yidx+1)*spsize[1],xidx*spsize[0]:(xidx+1)*spsize[0],:]
+            # plt.subplot(numy-1, numx-1, ind+1)
+            # plt.imshow(patchim[ind,:])
+            ind = ind + 1
+    return patchim, numx, numy, spsize
+
+
+def merge_montage(patchim, numx, numy, imsize, spsize=(1000, 2000)):
+    # merge
+    ind = 0
+    mergeim = np.zeros((spsize[1]*numy, spsize[0]*numx, 3), dtype=np.float32)
+    #print(mergeim.shape)
+
+    for yidx in range(numx-1):
+        for xidx in range(numy - 1):
+            mergeim[yidx*spsize[1]:(yidx+1)*spsize[1],xidx*spsize[0]:(xidx+1)*spsize[0],:] = patchim[ind,:]
+            # plt.subplot(numy-1, numx-1, ind+1)
+            # plt.imshow(patchim[ind,:])
+            ind = ind + 1
+
+    return mergeim[0:imsize[0],0:imsize[1],:]
+
+
 def compute_word_maps(heatmap, image_height, image_width, lines, heatmap_affinity=None, descale=2, make_channel=False):
     if heatmap_affinity is None:
         heatmap_affinity = heatmap
 
     textmap = np.zeros((image_height // descale, image_width // descale)).astype('float32')
-    #linkmap = np.zeros((image_height // descale, image_width // descale)).astype('float32')
+    linkmap = np.zeros((image_height // descale, image_width // descale)).astype('float32')
 
     src = np.array([[0, 0], [heatmap.shape[1], 0], [heatmap.shape[1], heatmap.shape[0]], [0, heatmap.shape[0]]]).astype(
         'float32')
