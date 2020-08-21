@@ -154,6 +154,7 @@ class DataLoader(BaseDataLoader):
             chars.append(char_list[idx][0] + ',' + char_list[idx][1])
 
         # split dataset train/validation
+        print('...split data')
         img_s = split_list(imgs,
                            [train_valid_ratio, 1 - train_valid_ratio],
                            shuffle=True,
@@ -203,6 +204,7 @@ class DataLoader(BaseDataLoader):
                     img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
                     ret, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
                     img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+
                 if word_mode is False:
                     imap = image_utils.compute_maps(heatmap=heatmap,
                                                     image_height=img.shape[0],
@@ -237,6 +239,7 @@ class DataLoader(BaseDataLoader):
                 batch_size).prefetch(
                 tf.data.experimental.AUTOTUNE)
 
+        print('...create tfdataset')
         dataset_train = make_tfdataset(img_s[0], coord_s[0])
         dataset_valid = make_tfdataset(img_s[1], coord_s[1])
 

@@ -336,6 +336,7 @@ class DetectionModel(BaseModel):
             if image.shape[2] > 2000:
                 #img_array, numx, numy, spsize = image_utils.montage_img(image[0,:], spsize=(1000, 2000))
                 tim = image_utils.per_image_standardization(image)
+                #tim = image
                 img_array, numx, numy, spsize = image_utils.montage_img(tim[0, :], spsize=(1000, 2000))
             else:
                 img_array = image_utils.per_image_standardization(image)
@@ -343,7 +344,7 @@ class DetectionModel(BaseModel):
             if image.shape[2] > 2000:
                 box_out = np.ones(
                     (img_array.shape[0], img_array.shape[1] // 2, img_array.shape[2] // 2, img_array.shape[3])) * 255
-                for ii in range(img_array.shape[0]):
+                for ii in tqdm(range(img_array.shape[0])):
 
                     bx = self.generator.predict(np.expand_dims(img_array[ii,],axis=0))
                     box_out[ii,] = np.array(bx)[0,]
@@ -351,8 +352,8 @@ class DetectionModel(BaseModel):
                 box_pred = image_utils.merge_montage(box_out, numx, numy, imsize=(int(np.floor(oimsize[1]/2)), int(np.floor(oimsize[2]/2))), spsize=(1000//2, 2000//2))
                 box_pred = np.expand_dims(box_pred,axis=0)
 
-                #np.save('/home/dk/docrv2_sroie/temp.npy', [box_pred], allow_pickle=True)
-                #print(box_pred.shape)
+                np.save('/home/dk/docrv2_sroie/temp.npy', [box_pred], allow_pickle=True)
+                print(box_pred.shape)
             else:
                 box_pred = self.generator.predict(img_array)
 
