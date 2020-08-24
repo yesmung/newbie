@@ -21,6 +21,11 @@ def rescale_maps(image):
     return np.array(image, dtype=np.uint8)
 
 
+def rescale_maps_for_inference(image):
+    image = image * 127.5 + 127.5
+    return np.array(image/255., dtype=np.float32)
+
+
 def per_image_standardization(image):
     image = (tf.cast(image, tf.float32) - 127.5) / 127.5
     return image

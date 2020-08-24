@@ -331,12 +331,12 @@ class DetectionModel(BaseModel):
         for image in images:
             # split images if large
             oimsize = image.shape
-            #print(oimsize)
+            # print(oimsize)
 
             if image.shape[2] > 2000:
-                #img_array, numx, numy, spsize = image_utils.montage_img(image[0,:], spsize=(1000, 2000))
+                # img_array, numx, numy, spsize = image_utils.montage_img(image[0,:], spsize=(1000, 2000))
                 tim = image_utils.per_image_standardization(image)
-                #tim = image
+                # tim = image
                 img_array, numx, numy, spsize = image_utils.montage_img(tim[0, :], spsize=(1000, 2000))
             else:
                 img_array = image_utils.per_image_standardization(image)
@@ -347,21 +347,22 @@ class DetectionModel(BaseModel):
                 for ii in tqdm(range(img_array.shape[0])):
 
                     bx = self.generator.predict(np.expand_dims(img_array[ii,],axis=0))
+                    bx = image_utils.rescale_maps_for_inference(bx)
                     box_out[ii,] = np.array(bx)[0,]
 
                 box_pred = image_utils.merge_montage(box_out, numx, numy, imsize=(int(np.floor(oimsize[1]/2)), int(np.floor(oimsize[2]/2))), spsize=(1000//2, 2000//2))
                 box_pred = np.expand_dims(box_pred,axis=0)
 
                 np.save('/home/dk/docrv2_sroie/temp.npy', [box_pred], allow_pickle=True)
-                print(box_pred.shape)
+                # print(box_pred.shape)
             else:
                 box_pred = self.generator.predict(img_array)
-
+                box_pred = image_utils.rescale_maps_for_inference(box_pred)
 
             if self.config.data.word_mode is True:
-                #print(box_pred.shape)
+                # print(box_pred.shape)
                 box_pred[:,:,:,0] = box_pred[:,:,:,1]
-                #np.save('/home/dk/docrv2_sroie/temp.npy',[box_pred],allow_pickle=True)
+                # np.save('/home/dk/docrv2_sroie/temp.npy',[box_pred],allow_pickle=True)
                 boxes_char = image_utils.getTextBoxes(box_pred,
                                                       text_threshold=self.config.detect.char_text_threshold,
                                                       dscale=self.config.model.descale_factor)[0]
