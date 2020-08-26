@@ -25,6 +25,7 @@
 		"mask_dist":"0.9,0.9",
 		"otsu":false,
 		"word_mode":true,
+		"sroie":true,
 		"online_process":true
 	},
 	"model":{
