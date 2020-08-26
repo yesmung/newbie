@@ -82,6 +82,17 @@ def get_gaussian_heatmap(size=512, distanceRatio=3.34):
     return g.clip(0, 1).astype('float32')
 
 
+def get_gaussian1d_heatmap(size=512, distanceRatio=1.5):
+    # 1d gaussian heatmap along x axis
+    v = np.abs(np.linspace(-size / 2, size / 2, num=size))
+    x, y = np.meshgrid(v, v)
+    g = np.sqrt(y ** 2)
+    g *= distanceRatio / (size / 2)
+    g = np.exp(-(1 / 2) * (g ** 2))
+    # g*=255
+    return g.clip(0, 1).astype('float32')
+
+
 def get_asymmetric_gaussian_heatmap(size=512, distanceRatio=3.34, sx=1, sy=1, amp=1):
     v = np.abs(np.linspace(-size / 2, size / 2, num=size))
     x, y = np.meshgrid(v, v)
@@ -138,6 +149,47 @@ def merge_montage(patchim, numx, numy, imsize, spsize=(1000, 2000), overlap=20):
             ind = ind + 1
 
     return mergeim[0:imsize[0],0:imsize[1],:]
+
+
+def compute_word_maps_no_space(heatmap, image_height, image_width, lines, descale=2):
+
+    textmap = np.zeros((image_height // descale, image_width // descale)).astype('float32')
+
+    src = np.array([[0, 0], [heatmap.shape[1], 0], [heatmap.shape[1], heatmap.shape[0]], [0, heatmap.shape[0]]]).astype(
+        'float32')
+
+    for line in lines:
+        for lind in range(len(line)):
+            lvals = line[lind]
+            paddx = 0
+            paddy = 0
+            x1 = lvals[0] - paddx
+            y1 = lvals[1] - paddy
+
+            x2 = lvals[2] + paddx
+            y2 = lvals[3] - paddy
+
+            x3 = lvals[4] + paddx
+            y3 = lvals[5] + paddy
+
+            x4 = lvals[6] - paddx
+            y4 = lvals[7] + paddy
+            c = lvals[8]
+
+            character_points = np.array([[rx1, ry1], [rx2, ry2], [rx3, ry3], [rx4, ry4]]).astype(
+                'float32') / descale
+
+            MA = cv2.getPerspectiveTransform(
+                src=src,
+                dst=character_points,
+            )
+
+            textmap += cv2.warpPerspective(heatmap, MA, dsize=(textmap.shape[1], textmap.shape[0])).astype(
+                'float32')
+
+    emptymap = np.zeros(textmap.shape)
+    return np.concatenate([textmap[..., np.newaxis], emptymap[..., np.newaxis], emptymap[..., np.newaxis]],
+                            axis=2).clip(0, 255)
 
 
 def compute_word_maps(heatmap, image_height, image_width, lines, heatmap_affinity=None, descale=2, make_channel=False):
@@ -209,7 +261,7 @@ def compute_word_maps(heatmap, image_height, image_width, lines, heatmap_affinit
             previous_link_points = True
 
     emptymap = np.zeros(textmap.shape)
-    return np.concatenate([emptymap[..., np.newaxis], textmap[..., np.newaxis], emptymap[..., np.newaxis]],
+    return np.concatenate([textmap[..., np.newaxis], emptymap[..., np.newaxis], emptymap[..., np.newaxis]],
                             axis=2).clip(0, 255)
 
 
