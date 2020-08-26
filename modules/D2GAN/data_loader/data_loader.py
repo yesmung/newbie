@@ -53,6 +53,7 @@ class DataLoader(BaseDataLoader):
             # log meta db to mlflow
             self.log_meta_db_to_mlflow()
 
+
     def set_meta_db(self):
         # create new meta db
         path = self.config.META_DB.path
@@ -79,6 +80,7 @@ class DataLoader(BaseDataLoader):
         print_db(db_meta, save=True, save_path=dbinfofile)
 
         return db_meta, dbinfofile
+
 
     def log_meta_db_to_mlflow(self):
         db_meta = self.db_meta
@@ -111,8 +113,9 @@ class DataLoader(BaseDataLoader):
 
         mlflow.set_tag('data_summary', data_info_string)
 
+
     def get_data_online(self, batch_size=8, size=512, distanceRatio=[1.5, 1], sratio=[5, 1, 1, 5], amp=[1, 1],
-                        descale=2, make_channel=False, from_config=False, use_otsu=False):
+                        descale=2, make_channel=False, from_config=False, use_otsu=False, online_process=False):
         # get data from config
         if from_config:
             size = self.config.data.mask_sampling_size
@@ -121,6 +124,7 @@ class DataLoader(BaseDataLoader):
             amp = np.array(self.config.data.mask_amp.split(','), dtype=np.float32)
             descale = self.config.model.descale_factor
             use_otsu = self.config.data.otsu
+            online_process = self.config.data.online_process
             try:
                 word_mode = self.config.data.word_mode
             except:
@@ -130,10 +134,13 @@ class DataLoader(BaseDataLoader):
         db_meta = self.db_meta
 
         # create heatmap
-        heatmap = image_utils.get_asymmetric_gaussian_heatmap(size, distanceRatio[0], sx=sratio[0], sy=sratio[1],
-                                                              amp=amp[0])
-        heatmap_affinity = image_utils.get_asymmetric_gaussian_heatmap(size, distanceRatio[1], sx=sratio[2],
-                                                                       sy=sratio[3], amp=amp[1])
+        if online_process:
+            heatmap = image_utils.get_gaussian1d_heatmap(size, distanceRatio[0])
+        else:
+            heatmap = image_utils.get_asymmetric_gaussian_heatmap(size, distanceRatio[0], sx=sratio[0], sy=sratio[1],
+                                                                  amp=amp[0])
+            heatmap_affinity = image_utils.get_asymmetric_gaussian_heatmap(size, distanceRatio[1], sx=sratio[2],
+                                                                           sy=sratio[3], amp=amp[1])
 
         # set params
         # inputsize = (self.config.data.image_size_h, self.config.data.image_size_w)
@@ -169,6 +176,8 @@ class DataLoader(BaseDataLoader):
         else:
             convChannel = 2
 
+        # image size
+        cimsize = (self.config.data.image_size_h, self.config.data.image_size_w)
 
 
         def make_tfdataset(imgs, coods):
@@ -205,19 +214,37 @@ class DataLoader(BaseDataLoader):
                     ret, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
                     img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
 
-                if word_mode is False:
-                    imap = image_utils.compute_maps(heatmap=heatmap,
-                                                    image_height=img.shape[0],
-                                                    image_width=img.shape[1],
-                                                    lines=[lines], heatmap_affinity=heatmap_affinity,
-                                                    descale=descale, make_channel=make_channel)
+                if online_process:
+                    # crop image and coordinates
+                    imgsize = img.shape
+                    # set crop range
+                    imgsize[0] = imgsize[0] - cimsize[0]
+                    imgsize[1] = imgsize[1] - cimsize[1]
+                    cropx1 = np.random.randint(0,imgsize[0], 1)[0]
+                    cropy1 = np.random.randint(0, imgsize[1], 1)[0]
+                    cropx2 = cropx1 + cimsize[0]
+                    cropy2 = cropy2 + cimsize[1]
+
+                    cimg = img[cropx1:cropx2, cropy1:cropy2,:]
+                    img = cimg
+
+                    # create map
+                    imap = image_utils.compute_word_maps_no_space(heatmap, cimsize[0], cimsize[1], [lines], descale)
+
                 else:
-                    imap = image_utils.compute_word_maps(heatmap=heatmap,
-                                                         image_height=img.shape[0],
-                                                         image_width=img.shape[1],
-                                                         lines=[lines], heatmap_affinity=heatmap_affinity,
-                                                         descale=descale, make_channel=make_channel)
-                # imap = imap - 0.5
+                    if word_mode is False:
+                        imap = image_utils.compute_maps(heatmap=heatmap,
+                                                        image_height=img.shape[0],
+                                                        image_width=img.shape[1],
+                                                        lines=[lines], heatmap_affinity=heatmap_affinity,
+                                                        descale=descale, make_channel=make_channel)
+                    else:
+                        imap = image_utils.compute_word_maps(heatmap=heatmap,
+                                                             image_height=img.shape[0],
+                                                             image_width=img.shape[1],
+                                                             lines=[lines], heatmap_affinity=heatmap_affinity,
+                                                             descale=descale, make_channel=make_channel)
+                    # imap = imap - 0.5
 
                 return img, imap
 

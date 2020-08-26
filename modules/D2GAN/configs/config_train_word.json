@@ -9,7 +9,7 @@
 	},
 	"META_DB":{
 		"load_existing_meta_db": false,
-		"name":"d2gan_test_meta_4",
+		"name":"d2gan_test_meta_8",
 		"path":"/home/dk/docrv2_sroie/temp/",
 		"log":"/info.txt",
 		"description":"meta db",
@@ -24,20 +24,21 @@
 		"mask_amp":"1,1",
 		"mask_dist":"0.9,0.9",
 		"otsu":false,
-		"word_mode":true
+		"word_mode":true,
+		"online_process":true
 	},
 	"model":{
 		"name":"model.d2gan",
 		"descale_factor":2,
 		"weight_path":"",
-		"pretrained_model_path":"/home/dk/docrv2_sroie/mlflow/7e02d85c30e141fb95437e228ec892e9/artifacts/models_generator/data/model.h5",
+		"pretrained_model_path":"/home/dk/docrv2_sroie/mlflow/7e02d85c30e141fb95437e228ec892e9/artifacts/",
 		"use_pretrained":true,
 		"optimizer":"adam",
 		"loss":"mse"
 	},
 	"trainer":{
 		"name":"trainer.Trainer",
-		"num_epochs":1000000,
+		"num_epochs":50000,
 		"num_steps":100,
 		"batch_size":8,
 		"validation_view_size":2,
