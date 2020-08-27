@@ -353,7 +353,7 @@ class DetectionModel(BaseModel):
                 box_pred = image_utils.merge_montage(box_out, numx, numy, imsize=(int(np.floor(oimsize[1]/2)), int(np.floor(oimsize[2]/2))), spsize=(1000//2, 2000//2))
                 box_pred = np.expand_dims(box_pred,axis=0)
 
-                np.save('/home/dk/docrv2_sroie/temp.npy', [box_pred], allow_pickle=True)
+                # np.save('/home/dk/docrv2_sroie/temp.npy', [box_pred], allow_pickle=True)
                 # print(box_pred.shape)
             else:
                 box_pred = self.generator.predict(img_array)
@@ -361,7 +361,7 @@ class DetectionModel(BaseModel):
 
             if self.config.data.word_mode is True:
                 # print(box_pred.shape)
-                box_pred[:,:,:,0] = box_pred[:,:,:,1]
+                # box_pred[:,:,:,0] = box_pred[:,:,:,1]
                 # np.save('/home/dk/docrv2_sroie/temp.npy',[box_pred],allow_pickle=True)
                 boxes_char = image_utils.getTextBoxes(box_pred,
                                                       text_threshold=self.config.detect.char_text_threshold,
