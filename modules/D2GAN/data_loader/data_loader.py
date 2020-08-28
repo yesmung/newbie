@@ -125,7 +125,7 @@ class DataLoader(BaseDataLoader):
             descale = self.config.model.descale_factor
             use_otsu = self.config.data.otsu
             online_process = self.config.data.online_process
-            sroie: object = self.config.data.sroie
+            sroie = self.config.data.sroie
             try:
                 word_mode = self.config.data.word_mode
             except:
@@ -135,7 +135,7 @@ class DataLoader(BaseDataLoader):
         db_meta = self.db_meta
 
         # create heatmap
-        if online_process or sroie:
+        if online_process is True or sroie is True:
             heatmap = image_utils.get_gaussian1d_heatmap(size, distanceRatio[0])
         else:
             heatmap = image_utils.get_asymmetric_gaussian_heatmap(size, distanceRatio[0], sx=sratio[0], sy=sratio[1],
@@ -224,13 +224,14 @@ class DataLoader(BaseDataLoader):
                     cropx1 = np.random.randint(0,imgsize[0], 1)[0]
                     cropy1 = np.random.randint(0, imgsize[1], 1)[0]
                     cropx2 = cropx1 + cimsize[0]
-                    cropy2 = cropy2 + cimsize[1]
+                    cropy2 = cropy1 + cimsize[1]
 
                     cimg = img[cropx1:cropx2, cropy1:cropy2,:]
                     img = cimg
 
                     # create map
-                    imap = image_utils.compute_word_maps_no_space(heatmap, cimsize[0], cimsize[1], [lines], descale)
+                    imap = image_utils.compute_word_maps_no_space(heatmap, cimsize[0], cimsize[1], [lines], descale,
+                                                                  shiftx=cropx1, shifty=cropy1)
                 elif sroie is True:
                     imap = image_utils.compute_word_maps_no_space(heatmap, img.shape[0], img.shape[1], [lines], descale)
                 else:

@@ -443,6 +443,7 @@ class DetectionModel(BaseModel):
 
             # update to db
             update_data(previewdb, index=imgidx, label='detection_d2gan_preview', image=theimage_boxed_char, ref=None)
+            update_data(previewdb, index=imgidx+len(images), label='detection_d2gan_pred', image=Image.fromarray(np.array(box_pred*255, dtype=np.uint8)[0,]), ref=None)
 
             # save to x1~y4 coordinates from table_word
             coordinates_only_table_word = table_word.copy()
