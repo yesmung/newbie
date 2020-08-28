@@ -4,6 +4,7 @@
 import mlflow
 import mlflow.keras
 import mlflow.tensorflow
+
 import os
 from configparser import ConfigParser
 path_config_file = os.getcwd().split('docrv2_sroie')[0] + 'docrv2_sroie/' + 'config.ini'
@@ -17,7 +18,9 @@ artifact_path = common_variable['mlflow']['artifact_path']
 mlflow.tensorflow.autolog(1)
 # mlflow.keras.autolog(1)
 
+
 def start_mlflow(config):
+
 	mf_experimentname = config.MLFLOW.module_name
 	mf_tracking_name = config.MLFLOW.exp_name
 
@@ -26,12 +29,10 @@ def start_mlflow(config):
 		mf_trackinguri = MLFLOW_URI
 
 	mlflow.set_tracking_uri(mf_trackinguri)
-
 	try:
-		mlflow.create_expermiment(mf_experimentname, artifact_location=artifact_path)
+		mlflow.create_experiment(mf_experimentname, artifact_location=artifact_path)
 	except:
 		print('experiment exist')
-
 	mlflow.set_experiment(mf_experimentname)
 
 	mlrun = mlflow.start_run(run_name=mf_tracking_name)

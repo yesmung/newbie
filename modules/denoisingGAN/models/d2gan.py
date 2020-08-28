@@ -260,3 +260,41 @@ class DetectionModel(BaseModel):
                 box_pred = self.generator.predict(tfimage)
                 boxes_pred.append(box_pred)
         return boxes_pred
+
+    def inference(self, images):
+        preds = []
+
+        def compute_input(image, expand_dim=True):
+            img_array = np.array(image, dtype=np.float32)
+            img_array = image_utils.per_image_standardization(img_array)
+            if expand_dim:
+                img_array = tf.expand_dims(img_array, 0)
+            return img_array
+
+        for image in images:
+            # split images if large
+            oimsize = image.shape
+            # print(oimsize)
+            if oimsize[1] > 1000:
+
+                img_array, numx, numy, spsize = image_utils.montage_img(np.array(image), spsize=(1000, 2000))
+                # print(img_array.shape)
+                box_out = np.ones(
+                    (img_array.shape[0], img_array.shape[1], img_array.shape[2], img_array.shape[3])) * 255
+
+                for ii in tqdm(range(img_array.shape[0])):
+                    pim = image_utils.per_image_standardization(img_array[ii,])
+                    bx = self.generator.predict(np.expand_dims(pim, axis=0))
+                    box_out[ii,] = np.array(bx)[0,]
+
+                box_pred = image_utils.merge_montage(box_out, numx, numy, imsize=(int(np.floor(oimsize[0])),
+                                                                                  int(np.floor(oimsize[1]))),
+                                                     spsize=(1000, 2000))
+                pred = np.expand_dims(box_pred, axis=0)
+            else:
+                pred = self.generator.predict(compute_input(image))
+
+            preds.append(pred)
+            #print('pred',pred.shape)
+
+        return preds

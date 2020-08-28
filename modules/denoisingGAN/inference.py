@@ -31,7 +31,7 @@ def main():
 
     # PREDICT
     print("Perform predictions")
-    predictions_img = model.detect(dataset, descale=config.model.descale_factor)
+    predictions_img = model.inference(dataset)
 
     # 결과 저장 to Inference DB
     print("Save to DB")

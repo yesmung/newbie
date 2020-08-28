@@ -35,6 +35,50 @@ def per_image_standardization_map(image):
     return image
 
 
+def montage_img(im, spsize=(1000,2000), overlap=40):
+    imsize = (im.shape[1],im.shape[0])
+    numy = int(np.ceil(imsize[1]/spsize[1]))+1
+    numx = int(np.ceil(imsize[0]/spsize[0]))+1
+    #patchim = np.zeros((numx*numy, spsize[1],spsize[0],3))
+    patchim = np.zeros((numx * numy, spsize[1]+overlap*2, spsize[0]+overlap*2, 3))
+
+    largeim = np.zeros((spsize[1]*numx, spsize[0]*numy, 3))
+    largeim[0:imsize[1],0:imsize[0],:] = np.array(im)
+
+    ind = 0
+    # split
+    # plt.subplots(numy-1, numx-1,figsize=(10,10))
+    for yidx in range(numx-1):
+        for xidx in range(numy-1):
+            if yidx == 0 or xidx == 0:
+                patchim[ind, overlap:,overlap:,:] = largeim[(yidx * spsize[1]):((yidx + 1) * spsize[1] + overlap),
+                                  (xidx * spsize[0]):((xidx + 1) * spsize[0] + overlap), :]
+            elif yidx == numx-2 or xidx == numy-2:
+                patchim[ind, :-overlap,:-overlap,:] = largeim[(yidx * spsize[1] - overlap):((yidx + 1) * spsize[1] ),
+                                  (xidx * spsize[0] - overlap):((xidx + 1) * spsize[0] ), :]
+            else:
+                patchim[ind,:] = largeim[(yidx*spsize[1]-overlap):((yidx+1)*spsize[1]+overlap),
+                                         (xidx*spsize[0]-overlap):((xidx+1)*spsize[0]+overlap),:]
+            # plt.subplot(numy-1, numx-1, ind+1)
+            # plt.imshow(patchim[ind,:])
+            ind = ind + 1
+    return patchim, numx, numy, spsize
+
+
+def merge_montage(patchim, numx, numy, imsize, spsize=(1000, 2000), overlap=40):
+    # merge
+    ind = 0
+    mergeim = np.zeros((spsize[1]*numy, spsize[0]*numx, 3), dtype=np.float32)
+    #print(mergeim.shape)
+
+    for yidx in range(numx-1):
+        for xidx in range(numy - 1):
+            mergeim[yidx*spsize[1]:(yidx+1)*spsize[1],xidx*spsize[0]:(xidx+1)*spsize[0],:] = patchim[ind,overlap:-overlap,overlap:-overlap,:]
+            ind = ind + 1
+
+    return mergeim[0:imsize[0],0:imsize[1],:]
+
+
 def tf_equalize_histogram(image):
     values_range = tf.constant([0., 255.], dtype=tf.float32)
     histogram = tf.histogram_fixed_width(image, values_range, 256)

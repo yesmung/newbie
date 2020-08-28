@@ -172,16 +172,24 @@ class DataLoader(BaseDataLoader):
 
                     # create random faint image
                     if np.random.randint(0, high=5, size=1)[0] == 1:
-                        faintcorr = np.random.randint(20, high=150, size=1)[0]
-                        img1 = np.array(img1, dtype=np.float32) / 255.0
-                        img1 = img1 * faintcorr + 255 - faintcorr
-
                         bufflow = six.BytesIO()
                         img1 = Image.fromarray(np.array(img1, dtype=np.uint8))
                         img1.save(bufflow, 'JPEG', quality=int(np.random.randint(1, high=20, size=1)[0]))
                         img1 = Image.open(bufflow).convert('RGB')
                         img1 = np.array(img1)
                         # print('...faintcorr:', faintcorr)
+
+                    # add faint image option
+                    lench = np.random.randint(0, high=7, size=1)[0]
+                    if lench == 1:
+                        faintcorr = np.random.randint(20, high=50, size=1)[0]
+                        img1 = np.array(img1, dtype=np.float32) + faintcorr
+                        img1 = np.clip(img1,0,255)
+
+                    elif lench == 2:
+                        faintcorr = np.random.randint(20, high=50, size=1)[0]
+                        img1 = np.array(img1, dtype=np.float32) - faintcorr
+                        img1 = np.clip(img1, 0, 255)
 
                     img2 = decode_img(db_cs.get(str(dkey2).encode()))
                     img2 = np.array(img2)
@@ -232,7 +240,7 @@ class DataLoader(BaseDataLoader):
 
         dataset_inference = []
         for el in image_array:
-            #dataset_inference.append(cv2.cvtColor(cv2.cvtColor(el, cv2.COLOR_RGB2GRAY), cv2.COLOR_GRAY2RGB))
+            # dataset_inference.append(cv2.cvtColor(cv2.cvtColor(el, cv2.COLOR_RGB2GRAY), cv2.COLOR_GRAY2RGB))
             dataset_inference.append(el)
         return dataset_inference
 
