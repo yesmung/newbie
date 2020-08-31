@@ -270,10 +270,13 @@ class DetectionModel(BaseModel):
             if expand_dim:
                 img_array = tf.expand_dims(img_array, 0)
             return img_array
-
+        
+        pbar = tqdm(total=len(images), desc='Inference: ')
+        
         for image in images:
             # split images if large
             oimsize = image.shape
+            pbar.update(1)
             # print(oimsize)
             if oimsize[1] > 1000:
 
@@ -282,7 +285,8 @@ class DetectionModel(BaseModel):
                 box_out = np.ones(
                     (img_array.shape[0], img_array.shape[1], img_array.shape[2], img_array.shape[3])) * 255
 
-                for ii in tqdm(range(img_array.shape[0])):
+                for ii in range(img_array.shape[0]):
+                    pbar.set_description(desc='Inference montage: '+str(ii)+'/'+str(img_array.shape[0]), refresh=True)
                     pim = image_utils.per_image_standardization(img_array[ii,])
                     bx = self.generator.predict(np.expand_dims(pim, axis=0))
                     box_out[ii,] = np.array(bx)[0,]
@@ -291,6 +295,7 @@ class DetectionModel(BaseModel):
                                                                                   int(np.floor(oimsize[1]))),
                                                      spsize=(1000, 2000))
                 pred = np.expand_dims(box_pred, axis=0)
+                pbar.set_description(desc='Inference: ', refresh=True)
             else:
                 pred = self.generator.predict(compute_input(image))
 
