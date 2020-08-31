@@ -325,12 +325,12 @@ class DetectionModel(BaseModel):
         description = 'PREVIEW' + config.inference.data_db_description
         previewdb = create_data_db(path=path, name=name, description=description, data_class='PREVIEW')
 
-        pbar = tqdm(total=datalen)
-
+        pbar = tqdm(total=datalen, desc='Inference: ')
         imgidx = 0
         for image in images:
             # split images if large
             oimsize = image.shape
+            pbar.update(1)
             # print(oimsize)
 
             if image.shape[2] > 2000:
@@ -345,7 +345,8 @@ class DetectionModel(BaseModel):
                 box_out = np.ones(
                     (img_array.shape[0], img_array.shape[1] // 2, img_array.shape[2] // 2, img_array.shape[3])) * 255
                 for ii in tqdm(range(img_array.shape[0])):
-
+                    pbar.set_description(desc='Inference montage: ' + str(ii) + '/' + str(img_array.shape[0]),
+                                         refresh=True)
                     bx = self.generator.predict(np.expand_dims(img_array[ii,],axis=0))
                     bx = image_utils.rescale_maps_for_inference(bx)
                     box_out[ii,] = np.array(bx)[0,]
@@ -378,6 +379,7 @@ class DetectionModel(BaseModel):
                                                   size_threshold=self.config.detect.word_size_threshold,
                                                   dscale=self.config.model.descale_factor)[0]
 
+            pbar.set_description(desc='Inference: ', refresh=True)
             theimage_pil = Image.fromarray(np.array(image, dtype=np.uint8)[0,])
             roi_char = []
             table_char = pd.DataFrame(
@@ -459,7 +461,7 @@ class DetectionModel(BaseModel):
             coordinates_only_table_word_list.append(coordinates_only_table_word)
 
             imgidx = imgidx + 1
-            pbar.update(1)
+
 
         # DATA DB 시간 업데이트
         update_time_stemp(datadb)
