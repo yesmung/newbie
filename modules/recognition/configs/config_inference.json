@@ -1,7 +1,7 @@
 {
   "exp": {
     "name": "recog_inference_test223",
-    "path": "/SAM/jupyter/DK/test/"
+    "path": "/home/dk/docrv2_sroie/temp/"
   },
   "MLFLOW": {
     "module_name": "None",
@@ -10,11 +10,11 @@
   },
   "META_DB": {
     "load_existing_mete_db": false,
-    "name": "inference_recog_test242",
-    "path": "/SAM/jupyter/DK/temp/",
+    "name": "inference_recog_test2412",
+    "path": "/home/dk/docrv2_sroie/temp/",
     "log": "/info.txt",
     "description": "recognition inference test meta data db",
-    "dblist": "test0629_denosingGAN",
+    "dblist": "example_1_denoised",
     "target_prefix": "word_c",
     "dbvalid": "",
     "DB_MAIN_PATH": ""
@@ -23,7 +23,7 @@
     "name": "model.Model",
     "weight_path": "",
     "use_pretrained": true,
-    "pretrained_model_path": "/media/myungsung/msdisk/MLFLOW_SQLITE/artifacts/model/data/best_accuracy/model.h5",
+    "pretrained_model_path": "/home/dk/docrv2_sroie/modules/recognition/mlruns/ej/b5cbed8081794f019c88904a9f936738/artifacts/model/data/best_accuracy/model.pth",
     "transformation": "None",
     "featureExtraction": "ResNet",
     "sequenceModeling": "BiLSTM",
@@ -35,7 +35,7 @@
     "optimizer": "adam",
     "learning_rate": 1.0,
     "beta1": 0.9,
-    "rho": 0.95,ㅈ
+    "rho": 0.95,
     "eps": 1e-8,
     "grad_clip": 5,
     "gpu": true
@@ -48,19 +48,28 @@
     "checkpoint_verbose": false,
     "tensorboard_write_graph": false
   },
+  "trainer":{
+    "name": "trainer.Trainer",
+    "num_epochs": 100000,
+    "num_steps": 100,
+    "batch_size": 48,
+    "train_valid_ratio": 0.7,
+    "valid_interval": 500,
+    "verbose_training": true
+  },
   "data": {
-    "image_size_h": 36,
-    "image_size_w": 288,
-    "batch_max_length": 25,
+    "image_size_h": 48,
+    "image_size_w": 512,
+    "batch_max_length": 100,
     "num_reading_workers": 0,
     "PAD": true,
-    "character": "usecase1"
+    "character": "default"
   },
   "inference": {
     "create_new_data_db": false,
-    "data_db_path": "/SAM/jupyter/DK/DB/",
+    "data_db_path": "/home/dk/docrv2_sroie/DB/",
     "sorie_path": "",
-    "data_db_name": "test0629_denoisingGAN",
+    "data_db_name": "example_1_denoised",
     "data_db_description": "recognition module inference test data db",
     "save_prefix": "word",
     "create_preview_data_db": true,

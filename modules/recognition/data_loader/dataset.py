@@ -150,6 +150,9 @@ class LmdbDataset(Dataset):
         with self.env.begin(write=False).cursor(db) as txn:
             label_key = 'text-%09d'.encode() % index
             label = txn.get(label_key).decode()
+
+            if self.opt.upper_case_only is True:
+                label = label.upper()
             #label = label.replace(' ','')
 
             img_key = 'img-%09d'.encode() % index
@@ -216,7 +219,7 @@ class InferenceLmdbDataset(Dataset):
             print('cannot create lmdb from %s' % (root))
             sys.exit(0)
 
-        keys = get_keys_by_prefix(self.env.prefix)
+        keys = get_keys_by_prefix(self.env, prefix)
         nSamples = len(keys)
         self.nSamples = nSamples
         self.keys = keys
@@ -254,26 +257,26 @@ class InferenceLmdbDataset(Dataset):
                     img = Image.new('L', (self.opt.imgW, self.opt.imgH))
                 label = '[dummy_label]'
 
-        cood_key =  self.keys[index]
-        value = txn.get(cood_key)
-        wcood = decode_pd(value, sep='\t')
+            cood_key = self.keys[index]
+            value = txn.get(cood_key)
+            wcood = decode_pd(value, sep='\t')
 
-        img = ImageOps.invert(img)
+            img = ImageOps.invert(img)
 
-        imgs = []
-        for thebox in wcood:
-            thecood = np.array(thebox[0:4]).astype(np.float32)
-            try:
-                pdd = 3
-                thecood[1] = thecood[1] - pdd
-                thecood[3] = thecood[3] + pdd
-                cim = img.crop(thecood)
-            except:
+            imgs = []
+            for thebox in wcood:
                 thecood = np.array(thebox[0:4]).astype(np.float32)
-                cim = img.crop(thecood)
-            imgs.append((cim, label))
-        out_of_char = f'[^{self.opt.character}]'
-        label = re.sub(out_of_char, '', label)
+                try:
+                    pdd = 3
+                    thecood[1] = thecood[1] - pdd
+                    thecood[3] = thecood[3] + pdd
+                    cim = img.crop(thecood)
+                except:
+                    thecood = np.array(thebox[0:4]).astype(np.float32)
+                    cim = img.crop(thecood)
+                imgs.append((cim, label))
+            out_of_char = f'[^{self.opt.character}]'
+            label = re.sub(out_of_char, '', label)
 
         return imgs
 

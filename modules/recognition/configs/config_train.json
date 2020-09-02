@@ -1,7 +1,7 @@
 {
   "exp": {
     "name": "test",
-    "path": "/home/dk/docr2/temp/"
+    "path": "/home/dk/docrv2_sroie/temp/"
   },
   "MLFLOW": {
     "module_name": "RECOG",
@@ -10,13 +10,13 @@
   },
   "META_DB": {
     "load_existing_meta_db": false,
-    "name": "recog_train_0813_1",
-    "path": "/home/dk/docr2/temp/",
+    "name": "recog_train_0819_1",
+    "path": "/home/dk/docrv2_sroie/temp/",
     "log": "/info.txt",
     "description": "recognition test meta data db",
-    "dblist": "recog_train_100000",
+    "dblist": "recog_tab_train_100000",
     "batch_ratio": "1",
-    "dbvalid": "recog_test_1000",
+    "dbvalid": "recog_tab_test_1000",
     "DB_MAIN_PATH": ""
   },
   "model": {
@@ -42,7 +42,7 @@
   },
   "trainer":{
     "name": "trainer.Trainer",
-    "num_epochs": 10000,
+    "num_epochs": 100000,
     "num_steps": 100,
     "batch_size": 48,
     "train_valid_ratio": 0.7,
@@ -63,6 +63,7 @@
     "batch_max_length": 100,
     "num_reading_workers": 0,
     "PAD": true,
-    "character": "default"
+    "character": "uppercase",
+    "upper_case_only": true
   }
 }

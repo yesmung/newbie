@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# CUDA_VISIBLE_DEVICES=1 python main.py -c ./configs/config_train.json
+# CUDA_VISIBLE_DEVICES=0 python main.py -c ./configs/config_train.json
 # nohup OMP_NUM_THREADS=12 CUDA_VISIBLE_DEVICES=3 python main.py -c ./configs/config_usecase_1_attn_l_usecharonly_additions2_2.json
 # mlflow ui -p5051 --backend-store-uri sqlite:////home/dk/docrv2_sroie/mlflow/mlflow.db --default-artifact-root /home/dk/docrv2_sroie/mlflow/
 from __future__ import absolute_import, division, print_function, unicode_literals

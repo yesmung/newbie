@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # CUDA_VISIBLE_DEVICES=1 python inference.py -c ./configs/config_inference.json
 
-from __future__ absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from data_loader.data_loader import DataLoader
 from trainers.trainer import Trainer
@@ -35,8 +35,8 @@ def main():
 	print("Save data to DB")
 	data_loader.save_to_db(predictions=predictions)
 
-	print("Save data as SROIE format")
-	data_loader.save_to_sroie(predictions=predictions)
+	#print("Save data as SROIE format")
+	#data_loader.save_to_sroie(predictions=predictions)
 
 if __name__ == '__main__':
 	main()

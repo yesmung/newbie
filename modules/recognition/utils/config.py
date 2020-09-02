@@ -51,6 +51,11 @@ def optTransplator(config):
 	except:
 		cudasetting = True
 
+	try:
+		upper_case_only = config.data.upper_case_only
+	except:
+		upper_case_only = False
+
 	opt = EasyDict({'experiment_name':config.exp.name,
 					'train_data':'',
 					'valid_data':config.META_DB.dbvalid,
@@ -86,6 +91,7 @@ def optTransplator(config):
 					'input_channel':config.model.fe_input_channel,
 					'output_channel':config.model.fe_output_channel,
 					'hidden_size':config.model.bl_hidden_size,
+					'upper_case_only':upper_case_only,
 					'cuda':cudasetting,
 					'num_gpu':1})
 
@@ -93,6 +99,8 @@ def optTransplator(config):
 		opt.adam = True
 	if config.data.character == 'usecase1':
 		opt.character = """wIyzu"5U r$Yg0,|e'isPVSvn9aZ4WmA7k6o8KXQb/~@#tLqC_DN;=*HlF%p?cB!3TjRGf.hM+d`&OxJ2^1E-:\(\)\[\]\{\}\<\>"""
+	elif config.data.character == 'uppercase':
+		opt.character = """!"#$%&'*+,./0123456789;=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`|~-:\(\)\[\]\{\}\<\>"""
 	elif config.data.character == 'default':
 		opt.character = """wIyzu"5U r$Yg0,|e'isPVSvn9aZ4WmA7k6o8KXQb/~@#tLqC_DN;=*HlF%p?cB!3TjRGf.hM+d`&OxJ2^1E\-\:\(\)\[\]\{\}\<\>"""
 
