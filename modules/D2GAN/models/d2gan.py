@@ -327,6 +327,14 @@ class DetectionModel(BaseModel):
 
         pbar = tqdm(total=datalen, desc='Inference: ')
         imgidx = 0
+
+        # image desclae
+        image_descale = 1
+        try:
+            image_descale = int(self.config.data.image_descale)
+        except:
+            image_descale = 1
+
         for image in images:
             # split images if large
             oimsize = image.shape
@@ -364,9 +372,10 @@ class DetectionModel(BaseModel):
                 # print(box_pred.shape)
                 # box_pred[:,:,:,0] = box_pred[:,:,:,1]
                 # np.save('/home/dk/docrv2_sroie/temp.npy',[box_pred],allow_pickle=True)
+
                 boxes_char = image_utils.getTextBoxes(box_pred,
                                                       text_threshold=self.config.detect.char_text_threshold,
-                                                      dscale=self.config.model.descale_factor)[0]
+                                                      dscale=self.config.model.descale_factor//image_descale)[0]
                 boxes_word = []
             else:
                 boxes_char = image_utils.getTextBoxes(box_pred,

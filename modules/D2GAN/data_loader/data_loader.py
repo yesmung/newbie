@@ -281,6 +281,13 @@ class DataLoader(BaseDataLoader):
         config = self.config
         batch_size = config.trainer.batch_size
 
+        # set image scale for std dataset
+        image_descale = 1
+        try:
+            image_descale = int(self.config.data.image_descale)
+        except:
+            image_descale = 1
+
         # get data list and char coordinates
         img_list = read_all_keys_from_meta_db(db_meta, 'img-')
 
@@ -309,6 +316,9 @@ class DataLoader(BaseDataLoader):
                 with denv.begin(write=False) as txn:
                     db_cs = txn.cursor(db)
                     img = decode_img(db_cs.get(str(dkey).encode()))
+                    # resclae image size
+                    if image_descale > 1:
+                        img = img.resize((img.size[0]//image_descale,img.size[1]//image_descale))
                     img = np.array(img, dtype=np.uint8)
                 return img
 
