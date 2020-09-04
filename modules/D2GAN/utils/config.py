@@ -28,8 +28,15 @@ def get_config_from_json(json_file):
     return config, config_dict
 
 
-def process_config(json_file):
+def process_config(json_file, dbname=None):
     config, _ = get_config_from_json(json_file)
+
+    # replace db name
+    if dbname is not None:
+        config.META_DB.dblist = dbname
+        config.META_DB.name = 'img_%d'%(10*dbname.count(',')+10)
+        config.MLFLOW.exp_name = '[exp] img=%d'%(10*dbname.count(',')+10)
+
     config.callbacks.tensorboard_log_dir = os.path.join("experiments", time.strftime("%Y-%m-%d", time.localtime()),
                                                         config.exp.name, "logs/")
     config.callbacks.checkpoint_dir = os.path.join("experiments", time.strftime("%Y-%m-%d", time.localtime()),
