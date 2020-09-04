@@ -100,7 +100,7 @@ def optTransplator(config):
 	if config.data.character == 'usecase1':
 		opt.character = """wIyzu"5U r$Yg0,|e'isPVSvn9aZ4WmA7k6o8KXQb/~@#tLqC_DN;=*HlF%p?cB!3TjRGf.hM+d`&OxJ2^1E-:\(\)\[\]\{\}\<\>"""
 	elif config.data.character == 'uppercase':
-		opt.character = """!"#$%&'*+,./0123456789;=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`|~\-:\(\)\[\]\{\}\<\>"""
+		opt.character = """!"#$%&'*+,./0123456789;=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`|~\-:\(\)\[\]\{\}\<\> """
 	elif config.data.character == 'default':
 		opt.character = """wIyzu"5U r$Yg0,|e'isPVSvn9aZ4WmA7k6o8KXQb/~@#tLqC_DN;=*HlF%p?cB!3TjRGf.hM+d`&OxJ2^1E\-\:\(\)\[\]\{\}\<\>"""
 
