@@ -265,15 +265,26 @@ class InferenceLmdbDataset(Dataset):
 
             imgs = []
             for thebox in wcood:
-                thecood = np.array(thebox[0:4]).astype(np.float32)
-                try:
-                    pdd = 3
-                    thecood[1] = thecood[1] - pdd
-                    thecood[3] = thecood[3] + pdd
-                    cim = img.crop(thecood)
-                except:
+
+                # handling crop index
+                if self.opt.target_prefix == 'word_c':
                     thecood = np.array(thebox[0:4]).astype(np.float32)
+                    try:
+                        pdd = 3
+                        thecood[1] = thecood[1] - pdd
+                        thecood[3] = thecood[3] + pdd
+                        cim = img.crop(thecood)
+                    except:
+                        thecood = np.array(thebox[0:4]).astype(np.float32)
+                        cim = img.crop(thecood)
+
+                elif self.opt.target_prefix == 'char_c':
+                    thecood = np.array([thebox[0],thebox[1],thebox[4],thebox[5]]).astype(np.float32)
                     cim = img.crop(thecood)
+
+                else:
+                    print('!!! error, check target_prefix in config file: ',self.opt.target_prefix)
+
                 imgs.append((cim, label))
             out_of_char = f'[^{self.opt.character}]'
             label = re.sub(out_of_char, '', label)
