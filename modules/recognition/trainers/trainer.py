@@ -36,6 +36,7 @@ import mlflow.pyfunc
 from mlflow.tracking.client import MlflowClient
 from mlflow.entities import ViewType
 
+
 class Trainer(BaseTrain):
     def __init__(self, opt, data_loader, config, use_maindb=True):
         super(Trainer, self).__init__(opt, data_loader)
@@ -53,7 +54,8 @@ class Trainer(BaseTrain):
     def init_callbacks(self):
         self.callbacks.append(
             ModelCheckpoint(
-                filepath=os.path.join(self.config.callbacks.checkpoint_dir, '%s-{epoch:02d}-{val_loss:.2f}.ckpt' % self.config.exp.name),
+                filepath=os.path.join(self.config.callbacks.checkpoint_dir,
+                                      '%s-{epoch:02d}-{val_loss:.2f}.ckpt' % self.config.exp.name),
                 monitor=self.config.callbacks.checkpoint_monitor,
                 mode=self.config.callbacks.checkpoint_mode,
                 save_best_only=self.config.callbacks.checkpoint_save_best_only,
@@ -76,7 +78,7 @@ class Trainer(BaseTrain):
         print(self)
         opt = self.opt
         config = self.config
-        os.makedirs(config.exp.path+config.exp.name, exist_ok=True)
+        os.makedirs(config.exp.path + config.exp.name, exist_ok=True)
 
         """ dataset preparation"""
         opt.select_data = opt.select_data.split(',')
@@ -90,7 +92,7 @@ class Trainer(BaseTrain):
         valid_loader = torch.utils.data.DataLoader(
             valid_dataset,
             batch_size=opt.batch_size,
-            shuffle=True, # 'True' to check training progress with validation function.
+            shuffle=True,  # 'True' to check training progress with validation function.
             num_workers=int(opt.workers),
             collate_fn=AlignCollate_valid,
             pin_memory=True)
@@ -121,7 +123,7 @@ class Trainer(BaseTrain):
                     init.constant_(param, 0.0)
                 elif 'weight' in name:
                     init.kaiming_normal_(param)
-            except Exception as e: # for batchnorm.
+            except Exception as e:  # for batchnorm.
                 if 'weight' in name:
                     param.data.fill_(1)
                 continue
@@ -146,7 +148,7 @@ class Trainer(BaseTrain):
         if 'CTC' in opt.Prediction:
             criterion = torch.nn.CTCLoss(zero_infinity=True).to(device)
         else:
-            criterion = torch.nn.CrossEntropyLoss(ignore_index=0).to(device) # ignore [GO] token = ignore index 0
+            criterion = torch.nn.CrossEntropyLoss(ignore_index=0).to(device)  # ignore [GO] token = ignore index 0
 
         # loss averager
         loss_avg = Averager()
@@ -154,7 +156,7 @@ class Trainer(BaseTrain):
         # filter that only require gradient decent
         filtered_parameters = []
         params_num = []
-        for p in filter(lambda p : p.requires_grad, model.parameters()):
+        for p in filter(lambda p: p.requires_grad, model.parameters()):
             filtered_parameters.append(p)
             params_num.append(np.prod(p.size()))
         print('Trainable params num : ', sum(params_num))
@@ -162,13 +164,16 @@ class Trainer(BaseTrain):
         # setup optimizer
         if opt.adam:
             optimizer = optim.Adam(filtered_parameters, lr=opt.lr, betas=(opt.beta1, 0.999))
-        else:
+        elif opt.adadelta:
             optimizer = optim.Adadelta(filtered_parameters, lr=opt.lr, rho=opt.rho, eps=opt.eps)
-        print("Optimizer:")
+        elif opt.sgd:
+            optimizer = optim.SGD(filtered_parameters, lr=opt.lr, momentum=0.9)
+
+        print(">> Optimizer:")
         print(optimizer)
 
         """ final options """
-        with open(f'{config.exp.path+config.exp.name}/opt.txt', 'a') as opt_file:
+        with open(f'{config.exp.path + config.exp.name}/opt.txt', 'a') as opt_file:
             opt_log = '--------------- Options ---------------\n'
             args = vars(opt)
             for k, v in args.items():
@@ -209,7 +214,7 @@ class Trainer(BaseTrain):
             if 'CTC' in opt.Prediction:
                 preds = model(image, text).log_softmax(2)
                 preds_size = torch.IntTensor([preds.size(1)] * batch_size).to(device)
-                preds = preds.permute(1, 0, 2) # to use CTCLoss format
+                preds = preds.permute(1, 0, 2)  # to use CTCLoss format
 
                 # To avoid ctc_loss issue, disabled cudnn for the computation of the ctc_loss
                 # https://github.com/jpuigcerver/PyLaia/issues/16
@@ -217,13 +222,13 @@ class Trainer(BaseTrain):
                 cost = criterion(preds, text, preds_size, length)
                 torch.backends.cudnn.enabled = True
             else:
-                preds = model(image, text[:, :-1]) # align with Attention.forward
-                target = text[:, 1:] # without [GO] Symbol
+                preds = model(image, text[:, :-1])  # align with Attention.forward
+                target = text[:, 1:]  # without [GO] Symbol
                 cost = criterion(preds.view(-1, preds.shape[-1]), target.contiguous().view(-1))
 
             model.zero_grad()
             cost.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), opt.grad_clip) # gradient clippping with 5 (Default)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), opt.grad_clip)  # gradient clippping with 5 (Default)
             optimizer.step()
 
             loss_avg.add(cost)
@@ -232,10 +237,10 @@ class Trainer(BaseTrain):
             if i % opt.valInterval == 0:
                 elapsed_time = time.time() - start_time
                 print(f'[{i}/{opt.num_iter}] Loss: {loss_avg.val():0.5f} elapsed_time: {elapsed_time:0.5f}')
-                mlflow.log_metrics({'Loss':np.double(loss_avg.val()), 'elapsed_time':elapsed_time}, step=i)
+                mlflow.log_metrics({'Loss': np.double(loss_avg.val()), 'elapsed_time': elapsed_time}, step=i)
 
                 # for log
-                with open(f'{config.exp.path+config.exp.name}/log_train.txt', 'a') as log:
+                with open(f'{config.exp.path + config.exp.name}/log_train.txt', 'a') as log:
                     log.write(f'[{i}/{opt.num_iter}] Loss: {loss_avg.val():0.5f} elapsed_time: {elapsed_time:0.5f}\n')
                     loss_avg.reset()
 
@@ -250,15 +255,16 @@ class Trainer(BaseTrain):
                         if 'Attn' in opt.Prediction:
                             pred = pred[:pred.find('[s]')]
                             gt = gt[:gt.find('[s]')]
-                        print(f'{pred:20s}, gt: {gt:20s}, {str(pred==gt)}')
-                        mltag = mltag + f'{pred:20s}, gt: {gt:20}, {str(pred==gt)}\n'
-                        log.write(f'{pred:20s}, gt: {gt:20s}, {str(pred==gt)}\n')
+                        print(f'{pred:20s}, gt: {gt:20s}, {str(pred == gt)}')
+                        mltag = mltag + f'{pred:20s}, gt: {gt:20}, {str(pred == gt)}\n'
+                        log.write(f'{pred:20s}, gt: {gt:20s}, {str(pred == gt)}\n')
                     mlflow.set_tag(f'{i}/{opt.num_iter}', mltag)
 
                     valid_log = f'[{i}/{opt.num_iter}] valid loss : {valid_loss:0.5f}'
                     valid_log = f' accuracy: {current_accuracy:0.3f}, norm_ED: {current_norm_ED:0.2f}'
                     print(valid_log)
-                    mlflow.log_metrics({'valid_loss':np.double(valid_loss), 'accuracy':np.double(current_accuracy), 'norm_ED':np.double(current_norm_ED)}, step=i)
+                    mlflow.log_metrics({'valid_loss': np.double(valid_loss), 'accuracy': np.double(current_accuracy),
+                                        'norm_ED': np.double(current_norm_ED)}, step=i)
                     log.write(valid_log + '\n')
 
                     # keep best accuracy model
@@ -277,7 +283,7 @@ class Trainer(BaseTrain):
 
                     if current_norm_ED < best_norm_ED:
                         best_norm_ED = current_norm_ED
-                        torch.save(model.state_dict(), f'{config.exp.path+config.exp.name}/best_norm_ED.pth')
+                        torch.save(model.state_dict(), f'{config.exp.path + config.exp.name}/best_norm_ED.pth')
                         # log mlflow model
                         pbpath = config.exp.path + config.exp.name + '/best_norm_ED'
                         os.makedirs(pbpath, exist_ok=True)
@@ -338,7 +344,7 @@ class Trainer(BaseTrain):
         if opt.cuda:
             model.load_state_dict(torch.load(opt.saved_model))
         else:
-            model.load_state_dict(torch.load(opt.saved_model, map_location=lambda storage, loc:storage))
+            model.load_state_dict(torch.load(opt.saved_model, map_location=lambda storage, loc: storage))
 
         # prepare data.
         AlignCollate_demo = AlignCollate(imgH=opt.imgH, imgW=opt.imgW, keep_ratio_with_pad=opt.PAD)
@@ -347,7 +353,8 @@ class Trainer(BaseTrain):
         prefixs = prefixs.split(',')
         select_data = config.META_DB.dblist
         select_data = select_data.split(',')
-        demo_data = inference_dataset(root=opt.train_data, opt=opt, select_data=select_data, prefixs=prefixs, use_maindb=self.use_maindb)
+        demo_data = inference_dataset(root=opt.train_data, opt=opt, select_data=select_data, prefixs=prefixs,
+                                      use_maindb=self.use_maindb)
         print(demo_data)
         demo_loader = torch.utils.data.DataLoader(demo_data,
                                                   batch_size=opt.batch_size,
@@ -360,7 +367,7 @@ class Trainer(BaseTrain):
         model.eval()
 
         current_time = time.time()
-        tq = tqdm(total = len(demo_data))
+        tq = tqdm(total=len(demo_data))
         with torch.no_grad():
             recogresult = []
             for image_tensors, image_path_list in demo_loader:
@@ -380,7 +387,7 @@ class Trainer(BaseTrain):
                 for img_name, pred, acc in zip(image_path_list, preds_str, pred_acc):
                     tq.update(1)
 
-                    pred_result = pred[:pred.find('[s]')] # prune after "end of sentence" token([s])
+                    pred_result = pred[:pred.find('[s]')]  # prune after "end of sentence" token([s])
                     pacc = acc[:pred.find('[s]')]
 
                     recogresult.append((img_name, pred_result, pacc))

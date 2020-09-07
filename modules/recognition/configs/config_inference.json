@@ -1,7 +1,7 @@
 {
   "exp": {
-    "name": "recog_inference_test223",
-    "path": "/home/dk/docrv2_sroie/temp/"
+    "name": "recog_inference_test",
+    "path": "/home/dk/docrv2_sroie/temp_mlflow/"
   },
   "MLFLOW": {
     "module_name": "None",
@@ -10,20 +10,20 @@
   },
   "META_DB": {
     "load_existing_mete_db": false,
-    "name": "inference_recog_test2412",
-    "path": "/home/dk/docrv2_sroie/temp/",
+    "name": "recog_inference_all_0907_0001",
+    "path": "/media/myungsungkwak/msdisk/docrv2_data/inference_result/",
     "log": "/info.txt",
-    "description": "recognition inference test meta data db",
-    "dblist": "example_1_denoised",
-    "target_prefix": "word_c",
+    "description": "recognition inference meta db",
+    "dblist": "raw_recog_inference_data_all_0001",
+    "target_prefix": "char_c",
     "dbvalid": "",
-    "DB_MAIN_PATH": ""
+    "DB_MAIN_PATH": "/media/myungsungkwak/msdisk/docrv2_data/DB/db_main"
   },
   "model": {
     "name": "model.Model",
     "weight_path": "",
     "use_pretrained": true,
-    "pretrained_model_path": "/home/dk/docrv2_sroie/modules/recognition/mlruns/ej/b5cbed8081794f019c88904a9f936738/artifacts/model/data/best_accuracy/model.pth",
+    "pretrained_model_path": "/media/myungsungkwak/msdisk/docrv2_sroie/modules/recognition/mlruns/3/c1df6e8db93746fba61b9afc2c5e1945/artifacts/model/data/best_accuracy/model.pth",
     "transformation": "None",
     "featureExtraction": "ResNet",
     "sequenceModeling": "BiLSTM",
@@ -63,13 +63,14 @@
     "batch_max_length": 100,
     "num_reading_workers": 0,
     "PAD": true,
-    "character": "default"
+    "character": "uppercase",
+    "upper_case_only": true
   },
   "inference": {
-    "create_new_data_db": false,
-    "data_db_path": "/home/dk/docrv2_sroie/DB/",
-    "sorie_path": "",
-    "data_db_name": "example_1_denoised",
+    "create_new_data_db": true,
+    "data_db_path": "/media/myungsungkwak/msdisk/docrv2_data/DB/",
+    "sorie_path": "/media/myungsungkwak/msdisk/docrv2_sroie/evaluation/task2/",
+    "data_db_name": "recog_inference_result_all_0001",
     "data_db_description": "recognition module inference test data db",
     "save_prefix": "word",
     "create_preview_data_db": true,
