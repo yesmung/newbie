@@ -5,12 +5,12 @@
   },
   "MLFLOW": {
     "module_name": "RECOG",
-    "exp_name":"[MS] recog 0908 continue adadelta to sgd",
+    "exp_name":"[MS] recog 0908 continue ed3ec7b adadelta, sgd, sgd",
     "MAIN_URI": ""
   },
   "META_DB": {
     "load_existing_meta_db": false,
-    "name": "recog_train_0908_0001_cont_adadelta_1000",
+    "name": "recog_train_0908_0001_cont_adadelta_2",
     "path": "/media/myungsungkwak/msdisk/temp/",
     "log": "/info.txt",
     "description": "recognition train meta db",
@@ -23,7 +23,7 @@
     "name": "model.Model",
     "weight_path": "",
     "use_pretrained": true,
-    "pretrained_model_path": "/media/myungsungkwak/msdisk/docrv2_sroie/modules/recognition/mlruns/3/c3252c1c986f4a53b28891db55ff4332/artifacts/model/data/best_accuracy/model.pth",
+    "pretrained_model_path": "/media/myungsungkwak/msdisk/docrv2_sroie/modules/recognition/mlruns/3/ed3ec7bcf47b418e85729d71f7fa1f4b/artifacts/model/data/best_accuracy/model.pth",
     "transformation": "None",
     "featureExtraction": "ResNet",
     "sequenceModeling": "BiLSTM",
@@ -33,7 +33,7 @@
     "fe_output_channel": 512,
     "bl_hidden_size": 256,
     "optimizer": "SGD",
-    "learning_rate": 1.0,
+    "learning_rate": 0.001,
     "beta1": 0.9,
     "rho": 0.95,
     "eps": 1e-8,

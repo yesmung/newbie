@@ -167,7 +167,10 @@ class Trainer(BaseTrain):
         elif opt.adadelta:
             optimizer = optim.Adadelta(filtered_parameters, lr=opt.lr, rho=opt.rho, eps=opt.eps)
         elif opt.sgd:
-            optimizer = optim.SGD(filtered_parameters, lr=opt.lr, momentum=0.9)
+            if opt.continue_model != "":
+                optimizer = optim.SGD(filtered_parameters, lr=opt.lr, momentum=0.9, nesterov=True)
+            else:
+                optimizer = optim.SGD(filtered_parameters, lr=opt.lr, momentum=0.9, nesterov=False)
 
         print(">> Optimizer:")
         print(optimizer)

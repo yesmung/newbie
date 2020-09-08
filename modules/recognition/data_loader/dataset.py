@@ -282,6 +282,9 @@ class InferenceLmdbDataset(Dataset):
                     thecood = np.array([thebox[0],thebox[1],thebox[4],thebox[5]]).astype(np.float32)
                     cim = img.crop(thecood)
 
+                    # check wrong coodinates
+                    if cim.size[0]*cim.size[1] == 0:
+                        print(img_key,':: ERR: ', thebox)
                 else:
                     print('!!! error, check target_prefix in config file: ',self.opt.target_prefix)
 
@@ -380,9 +383,11 @@ class AlignCollate(object):
             #transform = NormalizePAD((input_channel, self.imgH, resized_max_w))
 
             resized_images = []
+
             for image in images:
                 w, h = image.size
                 ratio = w / float(h)
+
                 if math.ceil(self.imgH * ratio) > self.imgW:
                     resized_w = self.imgW
                 else:
