@@ -67,6 +67,8 @@ def optTransplator(config):
 					'continue_model':config.model.pretrained_model_path,
 					'saved_model':config.model.pretrained_model_path,
 					'adam':False,
+					'adadelta':False,
+					'sgd':False,
 					'lr':config.model.learning_rate,
 					'beta1':config.model.beta1,
 					'rho':config.model.rho,
@@ -97,6 +99,11 @@ def optTransplator(config):
 
 	if config.model.optimizer == 'Adam':
 		opt.adam = True
+	elif config.model.optimizer == 'Adadelta':
+		opt.adadelta = True
+	elif config.model.optimizer == 'SGD':
+		opt.sgd = True
+
 	if config.data.character == 'usecase1':
 		opt.character = """wIyzu"5U r$Yg0,|e'isPVSvn9aZ4WmA7k6o8KXQb/~@#tLqC_DN;=*HlF%p?cB!3TjRGf.hM+d`&OxJ2^1E-:\(\)\[\]\{\}\<\>"""
 	elif config.data.character == 'uppercase':

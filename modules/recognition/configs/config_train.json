@@ -1,29 +1,29 @@
 {
   "exp": {
-    "name": "test",
-    "path": "/home/dk/docrv2_sroie/temp/"
+    "name": "recognition training",
+    "path": "/media/myungsungkwak/msdisk/temp_mlflow/"
   },
   "MLFLOW": {
     "module_name": "RECOG",
-    "exp_name":"[DK] continue from 13323ad546b64044ac197e4003b6dfbf",
+    "exp_name":"[MS] recog 0908 continue ed3ec7b adadelta, sgd, sgd",
     "MAIN_URI": ""
   },
   "META_DB": {
     "load_existing_meta_db": false,
-    "name": "recog_train_0819_1",
-    "path": "/home/dk/docrv2_sroie/temp/",
+    "name": "recog_train_0908_0001_cont_adadelta_2",
+    "path": "/media/myungsungkwak/msdisk/temp/",
     "log": "/info.txt",
-    "description": "recognition test meta data db",
-    "dblist": "recog_tab_train_100000",
+    "description": "recognition train meta db",
+    "dblist": "recog_train_task2_all_0001",
     "batch_ratio": "1",
-    "dbvalid": "recog_tab_test_1000",
-    "DB_MAIN_PATH": ""
+    "dbvalid": "recog_test_task2_all_0001",
+    "DB_MAIN_PATH": "/media/myungsungkwak/msdisk/docrv2_sroie/DB/db_main"
   },
   "model": {
     "name": "model.Model",
     "weight_path": "",
     "use_pretrained": true,
-    "pretrained_model_path": "/home/dk/docrv2_sroie/mlflow/mlruns/1/13323ad546b64044ac197e4003b6dfbf/artifacts/model/data/best_accuracy/model.pth",
+    "pretrained_model_path": "/media/myungsungkwak/msdisk/docrv2_sroie/modules/recognition/mlruns/3/ed3ec7bcf47b418e85729d71f7fa1f4b/artifacts/model/data/best_accuracy/model.pth",
     "transformation": "None",
     "featureExtraction": "ResNet",
     "sequenceModeling": "BiLSTM",
@@ -32,8 +32,8 @@
     "fe_input_channel": 1,
     "fe_output_channel": 512,
     "bl_hidden_size": 256,
-    "optimizer": "adam",
-    "learning_rate": 1.0,
+    "optimizer": "SGD",
+    "learning_rate": 0.001,
     "beta1": 0.9,
     "rho": 0.95,
     "eps": 1e-8,
@@ -42,7 +42,7 @@
   },
   "trainer":{
     "name": "trainer.Trainer",
-    "num_epochs": 100000,
+    "num_epochs": 10000,
     "num_steps": 100,
     "batch_size": 48,
     "train_valid_ratio": 0.7,
