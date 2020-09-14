@@ -279,7 +279,8 @@ class InferenceLmdbDataset(Dataset):
                         cim = img.crop(thecood)
 
                 elif self.opt.target_prefix == 'char_c':
-                    thecood = np.array([thebox[0],thebox[1],thebox[4],thebox[5]]).astype(np.float32)
+                    pdd = 7
+                    thecood = np.array([int(thebox[0])-pdd,int(thebox[1])-pdd,int(thebox[4])+pdd,int(thebox[5])+pdd]).astype(np.float32)
                     cim = img.crop(thecood)
 
                     # check wrong coodinates
