@@ -131,3 +131,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+evaluation/
+.idea/
+data/
+sample/
+config.ini
+modules/**/mlruns/

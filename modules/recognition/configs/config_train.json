@@ -5,25 +5,25 @@
   },
   "MLFLOW": {
     "module_name": "RECOG",
-    "exp_name":"[MS] recog 0908 continue ed3ec7b adadelta, sgd, sgd",
+    "exp_name":"[MS] 0914 - continue BASE_MODEL adam",
     "MAIN_URI": ""
   },
   "META_DB": {
     "load_existing_meta_db": false,
-    "name": "recog_train_0908_0001_cont_adadelta_2",
+    "name": "recog_train_0914_random_data continue2",
     "path": "/media/myungsungkwak/msdisk/temp/",
     "log": "/info.txt",
     "description": "recognition train meta db",
-    "dblist": "recog_train_task2_all_0001",
-    "batch_ratio": "1",
-    "dbvalid": "recog_test_task2_all_0001",
-    "DB_MAIN_PATH": "/media/myungsungkwak/msdisk/docrv2_sroie/DB/db_main"
+    "dblist": "recog_train_task2_random_pad_sp_0001,recog_train_task2_random_pad_sp_0002,recog_train_task2_random_pad_sp_0003,recog_train_task2_random_pad_sp_0004",
+    "batch_ratio": "0.25,0.25,0.25,0.25",
+    "dbvalid": "recog_test_all_pad5_valid_0001",
+    "DB_MAIN_PATH": "/media/myungsungkwak/msdisk/docrv2_data/DB/db_main"
   },
   "model": {
     "name": "model.Model",
     "weight_path": "",
     "use_pretrained": true,
-    "pretrained_model_path": "/media/myungsungkwak/msdisk/docrv2_sroie/modules/recognition/mlruns/3/ed3ec7bcf47b418e85729d71f7fa1f4b/artifacts/model/data/best_accuracy/model.pth",
+    "pretrained_model_path": "/media/myungsungkwak/msdisk/docrv2_sroie/modules/recognition/mlruns/3/c1df6e8db93746fba61b9afc2c5e1945/artifacts/model/data/best_accuracy/model.pth",
     "transformation": "None",
     "featureExtraction": "ResNet",
     "sequenceModeling": "BiLSTM",
@@ -32,8 +32,8 @@
     "fe_input_channel": 1,
     "fe_output_channel": 512,
     "bl_hidden_size": 256,
-    "optimizer": "SGD",
-    "learning_rate": 0.001,
+    "optimizer": "Adam",
+    "learning_rate": 0.0001,
     "beta1": 0.9,
     "rho": 0.95,
     "eps": 1e-8,
@@ -42,7 +42,7 @@
   },
   "trainer":{
     "name": "trainer.Trainer",
-    "num_epochs": 10000,
+    "num_epochs": 50000,
     "num_steps": 100,
     "batch_size": 48,
     "train_valid_ratio": 0.7,
