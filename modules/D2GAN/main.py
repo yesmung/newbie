@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# CUDA_VISIBLE_DEVICES=1 python main.py -c ./configs/config_train_new7.json
+# CUDA_VISIBLE_DEVICES=-1 python main.py -c ./configs/config_train_word_half.json
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 

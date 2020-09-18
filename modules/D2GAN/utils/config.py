@@ -28,14 +28,18 @@ def get_config_from_json(json_file):
     return config, config_dict
 
 
-def process_config(json_file, dbname=None):
+def process_config(json_file, dbname=None, modelpath=None, savedbname=None):
     config, _ = get_config_from_json(json_file)
 
     # replace db name
     if dbname is not None:
         config.META_DB.dblist = dbname
-        config.META_DB.name = 'img_%d'%(10*dbname.count(',')+10)
-        config.MLFLOW.exp_name = '[exp] img=%d'%(10*dbname.count(',')+10)
+        config.META_DB.name = 'img_seq_%04d'%(dbname.count(','))
+        config.MLFLOW.exp_name = '[exp] img_seq: %04d'%(dbname.count(','))
+    # replace model
+    if modelpath is not None:
+        config.model.pretrained_model_path = modelpath
+        config.inference.data_db_name = savedbname
 
     config.callbacks.tensorboard_log_dir = os.path.join("experiments", time.strftime("%Y-%m-%d", time.localtime()),
                                                         config.exp.name, "logs/")

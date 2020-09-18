@@ -15,10 +15,11 @@ from utils.mlflow import start_mlflow
 from glob import glob
 import os
 import numpy as np
+import mlflow
 
-
-def main(dbnames=None,testrange=None):
+def main(dbnames=None, testrange=None):
 	for ridx in testrange:
+		# try:
 		args = get_args()
 		dbname = str(dbnames[0:ridx]).replace('[', '').replace(']', '').replace('\'', '').replace(' ', '')
 		print(dbname)
@@ -44,13 +45,22 @@ def main(dbnames=None,testrange=None):
 
 		# Train 시작
 		trainer.train_gan()
+		# except:
+		# 	print('err:',ridx)
+
+		# end mlflow
+		mlflow.end_run()
+
 
 if __name__ == '__main__':
-	# dbnames = glob('/home/dk/docrv2_sroie/DB/d2gan_exp_10im_*')
 	dbnames = glob('/home/dk/docrv2_sroie/DB/d2gan_exp_singleim_*')
 	dbnames = list(np.sort([os.path.basename(dbname) for dbname in dbnames]))
-	testrange = list(range(1, 10))
-	# testrange.extend(list(range(10, len(dbnames), 5)))
+	dbnames2 = glob('/home/dk/docrv2_sroie/DB/d2gan_exp_10im_*')
+	dbnames2 = list(np.sort([os.path.basename(dbname) for dbname in dbnames2]))
+	dbnames.extend(dbnames2)
+
+	testrange = list(range(2, 10))
+	testrange.extend(list(range(10, len(dbnames), 5)))
 	testrange.append(len(dbnames))
 	# run main
 	main(dbnames=dbnames, testrange=testrange)

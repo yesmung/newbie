@@ -291,7 +291,7 @@ class DetectionModel(BaseModel):
         except Exception as e:
             pass
 
-    def inference_and_save_to_db(self, data_loader, save_image=True, use_maindb=True):
+    def inference_and_save_to_db(self, data_loader, save_image=False, use_maindb=True):
 
         print('...load data')
         images = data_loader.get_inference_data_online(use_maindb)
@@ -312,6 +312,13 @@ class DetectionModel(BaseModel):
         path = config.inference.data_db_path
         name = config.inference.data_db_name
 
+        try:
+            image_resize = config.inference.image_resize
+            resizeFlag = True
+        except:
+            image_resize = 1
+            resizeFlag = False
+
         # DB load
         if config.inference.create_new_data_db:
             # create empty db
@@ -330,12 +337,34 @@ class DetectionModel(BaseModel):
 
         # image desclae
         image_descale = 1
+        model_descale = config.model.descale_factor
         try:
             image_descale = int(self.config.data.image_descale)
         except:
             image_descale = 1
 
         for image in images:
+            #print(image.shape)
+            imgminsize = np.min([image.shape[1],image.shape[2]])
+            resizeFlag = True
+            if resizeFlag is True and imgminsize > 1000 and imgminsize < 1200:
+                image_resize = 4
+            elif resizeFlag is True and imgminsize > 1200 and imgminsize < 2400:
+                image_resize = 8
+            elif resizeFlag is True and imgminsize > 2400 and imgminsize < 4000:
+                image_resize = 8
+            elif resizeFlag is True and imgminsize > 4000:
+                image_resize = 4
+            else:
+                image_resize = 2
+
+            theimage_pil = Image.fromarray(np.array(image, dtype=np.uint8)[0,])
+
+            if resizeFlag is True:
+                image = tf.image.resize(image,(image.shape[1]//image_resize,image.shape[2]//image_resize))
+
+                #print('**',image.shape)
+
             # split images if large
             oimsize = image.shape
             pbar.update(1)
@@ -351,7 +380,7 @@ class DetectionModel(BaseModel):
 
             if image.shape[2] > 2000:
                 box_out = np.ones(
-                    (img_array.shape[0], img_array.shape[1] // 2, img_array.shape[2] // 2, img_array.shape[3])) * 255
+                    (img_array.shape[0], img_array.shape[1] // model_descale, img_array.shape[2] // model_descale, img_array.shape[3])) * 255
                 for ii in tqdm(range(img_array.shape[0])):
                     pbar.set_description(desc='Inference montage: ' + str(ii) + '/' + str(img_array.shape[0]),
                                          refresh=True)
@@ -359,7 +388,7 @@ class DetectionModel(BaseModel):
                     bx = image_utils.rescale_maps_for_inference(bx)
                     box_out[ii,] = np.array(bx)[0,]
 
-                box_pred = image_utils.merge_montage(box_out, numx, numy, imsize=(int(np.floor(oimsize[1]/2)), int(np.floor(oimsize[2]/2))), spsize=(1000//2, 2000//2))
+                box_pred = image_utils.merge_montage(box_out, numx, numy, imsize=(int(np.floor(oimsize[1]/model_descale)), int(np.floor(oimsize[2]/model_descale))), spsize=(1000//model_descale, 2000//model_descale))
                 box_pred = np.expand_dims(box_pred,axis=0)
 
                 # np.save('/home/dk/docrv2_sroie/temp.npy', [box_pred], allow_pickle=True)
@@ -368,14 +397,22 @@ class DetectionModel(BaseModel):
                 box_pred = self.generator.predict(img_array)
                 box_pred = image_utils.rescale_maps_for_inference(box_pred)
 
+
+            if resizeFlag is True:
+                box_pred = np.expand_dims(cv2.resize(box_pred[0,:,:,:],dsize=(theimage_pil.size[0]//model_descale,theimage_pil.size[1]//model_descale)),axis=0)
+
             if self.config.data.word_mode is True:
                 # print(box_pred.shape)
                 # box_pred[:,:,:,0] = box_pred[:,:,:,1]
                 # np.save('/home/dk/docrv2_sroie/temp.npy',[box_pred],allow_pickle=True)
-
+                """
                 boxes_char = image_utils.getTextBoxes(box_pred,
                                                       text_threshold=self.config.detect.char_text_threshold,
-                                                      dscale=self.config.model.descale_factor//image_descale)[0]
+                                                      dscale=self.config.model.descale_factor//image_descale*image_resize)[0]
+                """
+                boxes_char = image_utils.getTextBoxes(box_pred,
+                                                      text_threshold=self.config.detect.char_text_threshold,
+                                                      dscale=self.config.model.descale_factor)[0]
                 boxes_word = []
             else:
                 boxes_char = image_utils.getTextBoxes(box_pred,
@@ -389,7 +426,7 @@ class DetectionModel(BaseModel):
                                                   dscale=self.config.model.descale_factor)[0]
 
             pbar.set_description(desc='Inference: ', refresh=True)
-            theimage_pil = Image.fromarray(np.array(image, dtype=np.uint8)[0,])
+
             roi_char = []
             table_char = pd.DataFrame(
                 {'x1': [], 'y1': [], 'x2': [], 'y2': [], 'x3': [], 'y3': [], 'x4': [], 'y4': [], 'char': [],
