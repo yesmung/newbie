@@ -14,6 +14,7 @@ from tensorflow.keras.layers import UpSampling2D, Conv2D
 from tensorflow.keras.applications import VGG19
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.optimizers import SGD
 
 # mlflow lib
 import mlflow
@@ -78,7 +79,16 @@ class DetectionModel(BaseModel):
         # Number of residual blocks in the generator
         self.n_residual_blocks = 16
 
-        optimizer = Adam(0.0002, 0.5)
+        if self.config.model.optimizer == "Adam":
+            print(">>>>> Optimizer : Adam, learning_rate : 0.0001")
+            optimizer = Adam(0.0001, 0.5)
+        elif self.config.model.optimizer == "SGD":
+            if self.config.model.use_pretrained is True:
+                print(">>>>> Optimizer : SGD, learning_rate : 0.0001, momentum=0.0, nesterov=True")
+                optimizer = SGD(learning_rate=0.0001, momentum=0.0, nesterov=True)
+            else:
+                print(">>>>> Optimizer : SGD, learning_rate : 0.00001, momentum=0.0, nesterov=False")
+                optimizer = SGD(learning_rate=0.0001, momentum=0.0, nesterov=False)
 
         # We use a pre-trained VGG19 model to extract image features from the high resolution
         # and the generated high resolution images and minimize the mse between them
@@ -345,8 +355,10 @@ class DetectionModel(BaseModel):
 
         for image in images:
             #print(image.shape)
-            imgminsize = np.min([image.shape[1],image.shape[2]])
+            #imgminsize = np.min([image.shape[1],image.shape[2]])
+            imgminsize = get_real_img_size(image)
             resizeFlag = True
+
             if resizeFlag is True and imgminsize > 1000 and imgminsize < 1200:
                 image_resize = 4
             elif resizeFlag is True and imgminsize > 1200 and imgminsize < 2400:
@@ -521,3 +533,30 @@ class DetectionModel(BaseModel):
         db_main = register_db(env=db_meta, db=previewdb)
 
         return datadb, coordinates_only_table_word_list
+
+
+def medfilt(x, k=29):
+    """Apply a length-k median filter to a 1D array x.
+    Boundaries are extended by repeating endpoints.
+    """
+    assert k % 2 == 1, "Median filter length must be odd."
+    assert x.ndim == 1, "Input must be one-dimensional."
+    k2 = (k - 1) // 2
+    y = np.zeros ((len (x), k), dtype=x.dtype)
+    y[:,k2] = x
+    for i in range (k2):
+        j = k2 - i
+        y[j:,i] = x[:-j]
+        y[:j,i] = x[0]
+        y[:-j,-(i+1)] = x[j:]
+        y[-j:,-(i+1)] = x[-1]
+    return np.median (y, axis=1)
+
+
+def get_real_img_size(theimage):
+    oim = theimage.convert('L')
+
+    pvals = np.array(medfilt(np.sum(
+        1-np.array(oim)/255,axis=0))>20)*oim.size[1]//2
+    pwhere = np.where(pvals>0)
+    return np.max(pwhere)-np.min(pwhere)
