@@ -9,11 +9,11 @@
 	},
 	"META_DB":{
 		"load_existing_meta_db": false,
-		"name":"d2gan_inference_11",
+		"name":"d2gan_inference_112",
 		"path":"/home/dk/docrv2_sroie/temp/",
 		"log":"/info.txt",
 		"description":"d2gan inference",
-		"dblist":"raw_test_task12_10img",
+		"dblist":"raw_test_task12_2img_denoised",
 		"DB_MAIN_PATH":""
 	},
 	"data":{
@@ -24,33 +24,33 @@
 		"mask_amp":"1,1",
 		"mask_dist":"1,1",
 		"otsu":false,
-		"word_mode":true
+		"word_mode":false
 	},
 	"model":{
 		"name":"model.d2gan",
 		"descale_factor":2,
 		"weight_path":"None",
-		"pretrained_model_path":"/home/dk/docrv2_sroie/mlflow/7e02d85c30e141fb95437e228ec892e9/artifacts/models_best_generator/data/model.h5",
+		"pretrained_model_path":"/home/dk/docrv2_sroie/mlflow/f733c97234254ef4b8ec10c7d178def7/artifacts/models_generator/data/model.h5",
 		"use_pretrained":true,
 		"optimizer":"adam",
 		"loss":"mse"
 	},
 	"detect":{
-		"char_text_threshold":0.1,
-		"word_detection_threshold":0.5,
-		"word_text_threshold":0.1,
-		"word_link_threshold":0.2,
-		"word_size_threshold":10
+		"char_text_threshold":0.4,
+		"word_detection_threshold":0.4,
+		"word_text_threshold":0.4,
+		"word_link_threshold":0.4,
+		"word_size_threshold":50
 	},
 	"trainer":{
 		"batch_size":1
 	},
 	"inference":{
 		"create_new_data_db":true,
-		"data_db_path":"/home/dk/docrv2_sroie/temp/",
+		"data_db_path":"/home/dk/docrv2_sroie/DB/",
 		"sroie_path":"/home/dk/docrv2_sroie/temp/sroie/task1/",
-		"data_db_name":"raw_test_task12_10img_1",
-		"data_db_description":"raw_test_task12_10img d2gan",
+		"data_db_name":"raw_test_task12_2img_denoised",
+		"data_db_description":"d2gan",
 		"create_preview_data_db":true,
 		"preview_db_postfix":"_preview_detection"
 	}

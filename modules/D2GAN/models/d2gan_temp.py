@@ -14,7 +14,6 @@ from tensorflow.keras.layers import UpSampling2D, Conv2D
 from tensorflow.keras.applications import VGG19
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.optimizers import SGD
 
 # mlflow lib
 import mlflow
@@ -53,42 +52,34 @@ from db import *
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 class DetectionModel(BaseModel):
-    def __init__(self, config):
-        super(DetectionModel, self).__init__(config)
-
+    def __init__(self):
+        #super(DetectionModel, self).__init__(config)
+        """
         # activate ml run
         if config.MLFLOW.module_name != 'None':
             mlflow.ActiveRun(self.config.mlrun)
             mlflow.keras.autolog()
-
+        """
         # get params from config
-        self.weight_path = self.config.model.weight_path
-        self.use_pretrained = self.config.model.use_pretrained
-        self.pretrained_model_path = self.config.model.pretrained_model_path
+        self.weight_path = None
+        self.use_pretrained = False
+        self.pretrained_model_path = None
 
         # Input shape
+        #self.config.model.descale_factor = 4
         self.channels = 3
-        self.lr_height = self.config.data.image_size_h  # Low resolution height
-        self.lr_width = self.config.data.image_size_w  # Low resolution width
+        self.lr_height = 256  # Low resolution height
+        self.lr_width = 256  # Low resolution width
         self.lr_shape = (self.lr_height, self.lr_width, self.channels)
 
-        self.hr_height = self.lr_height // self.config.model.descale_factor  # High resolution height
-        self.hr_width = self.lr_width // self.config.model.descale_factor  # High resolution width
+        self.hr_height = self.lr_height // 4  # High resolution height
+        self.hr_width = self.lr_width // 4  # High resolution width
         self.hr_shape = (self.hr_height, self.hr_width, self.channels)
 
         # Number of residual blocks in the generator
         self.n_residual_blocks = 16
 
-        if self.config.model.optimizer == "Adam":
-            print(">>>>> Optimizer : Adam, learning_rate : 0.0001")
-            optimizer = Adam(0.0001, 0.5)
-        elif self.config.model.optimizer == "SGD":
-            if self.config.model.use_pretrained is True:
-                print(">>>>> Optimizer : SGD, learning_rate : 0.0001, momentum=0.0, nesterov=True")
-                optimizer = SGD(learning_rate=0.0001, momentum=0.0, nesterov=True)
-            else:
-                print(">>>>> Optimizer : SGD, learning_rate : 0.00001, momentum=0.0, nesterov=False")
-                optimizer = SGD(learning_rate=0.0001, momentum=0.0, nesterov=False)
+        optimizer = Adam(0.0002, 0.5)
 
         # We use a pre-trained VGG19 model to extract image features from the high resolution
         # and the generated high resolution images and minimize the mse between them
@@ -135,7 +126,7 @@ class DetectionModel(BaseModel):
         # Load pretrained model
         # 현재 generator만 load 하도록 설계되어 있음 (inference)
         # 차후에 continue learning을 위해서는 generator, combined, discriminator 등 모두 load 필요
-        if self.config.model.use_pretrained is True:
+        if self.use_pretrained is True:
             print('... load pretrained model')
             if self.config.model.pretrained_model_path[-3:] == '.h5':
                 print('... load generator')
@@ -212,7 +203,7 @@ class DetectionModel(BaseModel):
         c2 = Add()([c2, c1])
 
         # Upsampling
-        c2 = unconv2d(c2, self.config.model.descale_factor)
+        c2 = unconv2d(c2, 4)
 
         # Generate high resolution output
         gen_hr = Conv2D(self.channels, kernel_size=9, strides=1, padding='same', activation='tanh')(c2)
@@ -322,18 +313,6 @@ class DetectionModel(BaseModel):
         path = config.inference.data_db_path
         name = config.inference.data_db_name
 
-        try:
-            image_resize = config.inference.image_resize
-            resizeFlag = True
-        except:
-            image_resize = 1
-            resizeFlag = False
-
-        try:
-            target_size = config.inference.target_size
-        except:
-            target_size = 550
-
         # DB load
         if config.inference.create_new_data_db:
             # create empty db
@@ -359,39 +338,11 @@ class DetectionModel(BaseModel):
             image_descale = 1
 
         for image in images:
-            #print(image.shape)
-            #imgminsize = np.min([image.shape[1],image.shape[2]])
-            #imgminsize = get_real_img_size(image)
-            resizeFlag = True
-            """
-            if resizeFlag is True and imgminsize > 1000 and imgminsize < 1200:
-                image_resize = 4
-            elif resizeFlag is True and imgminsize > 1200 and imgminsize < 2400:
-                image_resize = 8
-            elif resizeFlag is True and imgminsize > 2400 and imgminsize < 4000:
-                image_resize = 8
-            elif resizeFlag is True and imgminsize > 4000:
-                image_resize = 4
-            else:
-                image_resize = 2
-            """
-            theimage_pil = Image.fromarray(np.array(image, dtype=np.uint8)[0,])
-
-            if resizeFlag is True:
-                #image = tf.image.resize(image,(image.shape[1]//image_resize,image.shape[2]//image_resize))
-                # resize data
-                #print('---resize image')
-                theimage_resized, image_resize = resize_image(theimage_pil, targetsize=target_size)
-                #print('---equalize image')
-                theimage_resized = equalize_image(theimage_resized)
-                image = np.expand_dims(np.array(theimage_resized), axis=0)
-
-                #print('**',image.shape)
-
             # split images if large
             oimsize = image.shape
             pbar.update(1)
             # print(oimsize)
+
             if image.shape[2] > 2000:
                 # img_array, numx, numy, spsize = image_utils.montage_img(image[0,:], spsize=(1000, 2000))
                 tim = image_utils.per_image_standardization(image)
@@ -410,7 +361,7 @@ class DetectionModel(BaseModel):
                     bx = image_utils.rescale_maps_for_inference(bx)
                     box_out[ii,] = np.array(bx)[0,]
 
-                box_pred = image_utils.merge_montage(box_out, numx, numy, imsize=(int(np.floor(oimsize[1]/model_descale)), int(np.floor(oimsize[2]/model_descale))), spsize=(1000//model_descale, 2000//model_descale))
+                box_pred = image_utils.merge_montage(box_out, numx, numy, imsize=(int(np.floor(oimsize[1]/model_descale)), int(np.floor(oimsize[2]/model_descale))), spsize=(1000//model_descale-20, 2000//model_descale-20))
                 box_pred = np.expand_dims(box_pred,axis=0)
 
                 # np.save('/home/dk/docrv2_sroie/temp.npy', [box_pred], allow_pickle=True)
@@ -419,22 +370,14 @@ class DetectionModel(BaseModel):
                 box_pred = self.generator.predict(img_array)
                 box_pred = image_utils.rescale_maps_for_inference(box_pred)
 
-
-            if resizeFlag is True:
-                box_pred = np.expand_dims(cv2.resize(box_pred[0,:,:,:],dsize=(theimage_pil.size[0]//model_descale,theimage_pil.size[1]//model_descale)),axis=0)
-
             if self.config.data.word_mode is True:
                 # print(box_pred.shape)
                 # box_pred[:,:,:,0] = box_pred[:,:,:,1]
                 # np.save('/home/dk/docrv2_sroie/temp.npy',[box_pred],allow_pickle=True)
-                """
+
                 boxes_char = image_utils.getTextBoxes(box_pred,
                                                       text_threshold=self.config.detect.char_text_threshold,
-                                                      dscale=self.config.model.descale_factor//image_descale*image_resize)[0]
-                """
-                boxes_char = image_utils.getTextBoxes(box_pred,
-                                                      text_threshold=self.config.detect.char_text_threshold,
-                                                      dscale=self.config.model.descale_factor)[0]
+                                                      dscale=self.config.model.descale_factor//image_descale)[0]
                 boxes_word = []
             else:
                 boxes_char = image_utils.getTextBoxes(box_pred,
@@ -448,7 +391,7 @@ class DetectionModel(BaseModel):
                                                   dscale=self.config.model.descale_factor)[0]
 
             pbar.set_description(desc='Inference: ', refresh=True)
-
+            theimage_pil = Image.fromarray(np.array(image, dtype=np.uint8)[0,])
             roi_char = []
             table_char = pd.DataFrame(
                 {'x1': [], 'y1': [], 'x2': [], 'y2': [], 'x3': [], 'y3': [], 'x4': [], 'y4': [], 'char': [],
@@ -543,59 +486,3 @@ class DetectionModel(BaseModel):
         db_main = register_db(env=db_meta, db=previewdb)
 
         return datadb, coordinates_only_table_word_list
-
-
-def medfilt(x, k=29):
-    """Apply a length-k median filter to a 1D array x.
-    Boundaries are extended by repeating endpoints.
-    """
-    assert k % 2 == 1, "Median filter length must be odd."
-    assert x.ndim == 1, "Input must be one-dimensional."
-    k2 = (k - 1) // 2
-    y = np.zeros ((len (x), k), dtype=x.dtype)
-    y[:,k2] = x
-    for i in range (k2):
-        j = k2 - i
-        y[j:,i] = x[:-j]
-        y[:j,i] = x[0]
-        y[:-j,-(i+1)] = x[j:]
-        y[-j:,-(i+1)] = x[-1]
-    return np.median (y, axis=1)
-
-
-def get_real_img_size(theimage):
-    imarray_p = np.array(theimage, dtype=np.uint8)
-    theimage_p = Image.fromarray(imarray_p)
-    #print(theimage_p)
-    oim = theimage_p.convert('L')
-
-    pvals = np.array(medfilt(np.sum(
-        1-np.array(oim)/255,axis=0))>20)*oim.size[1]//2
-    pwhere = np.where(pvals>0)
-
-    return np.max(pwhere)-np.min(pwhere)
-
-
-def resize_image(theimage, targetsize=550):
-
-    imgminsize = get_real_img_size(theimage)
-    #print(imgminsize)
-    resize_factor = imgminsize / targetsize
-    #print(resize_factor)
-    resized_size = np.array([theimage.size[0], theimage.size[1]], dtype=np.float32) / resize_factor
-    resized_size = np.round(resized_size)
-
-    theimage_resized = theimage.resize(resized_size)
-
-    return theimage_resized, resize_factor
-
-
-def equalize_image(theimage):
-    x = np.array(theimage, dtype=np.float32)
-
-    a, b, c, d, gamma = x.max() * 0.5, x.max() * 0.9995, 0, 1, 1
-    y = (((x - a) / (b - a)) ** gamma) * (d - c) + c
-    y = np.clip(y, 0, 1)
-    img_output = y * 255
-
-    return Image.fromarray(np.array(img_output, dtype=np.uint8))
