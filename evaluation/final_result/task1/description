@@ -1,0 +1,21 @@
+Title
+Samsung Life Insurance
+
+Authors
+Dongyoung Kim, Myungsung Kwak
+
+Affiliation
+Data Analytics Laboratory (DA Lab), Samsung Life Insurance
+
+Short Description
+A Document text Detection Generative Adversarial Nets (D2GAN) model is utilized
+to perform the text localization task using SROIE data set.
+D2GAN learns text-image features via ImageNet pre-trained VGG network in
+adversarial manner and points out text locations. Note the images were scaled
+in an arbitrary ratio and the detected coordinates were re-scaled into
+original image space for the submission.
+
+Test score
+"precision": 0.9982966567922132,
+"recall": 0.9864128752708131,
+"hmean": 0.9923191879630435
