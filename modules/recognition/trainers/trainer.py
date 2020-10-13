@@ -169,11 +169,14 @@ class Trainer(BaseTrain):
         elif opt.sgd:
             if opt.continue_model != "":
                 optimizer = optim.SGD(filtered_parameters, lr=opt.lr, momentum=0.9, nesterov=True)
+                scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=opt.valInterval)
+
             else:
                 optimizer = optim.SGD(filtered_parameters, lr=opt.lr, momentum=0.9, nesterov=False)
 
         print(">> Optimizer:")
         print(optimizer)
+        print(scheduler)
 
         """ final options """
         with open(f'{config.exp.path + config.exp.name}/opt.txt', 'a') as opt_file:
@@ -233,6 +236,7 @@ class Trainer(BaseTrain):
             cost.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), opt.grad_clip)  # gradient clippping with 5 (Default)
             optimizer.step()
+            scheduler.step()
 
             loss_avg.add(cost)
 
