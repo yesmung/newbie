@@ -1,0 +1,8 @@
+[33;40m ..... [START] 언어 모델 생성 : dictionary[0m
+Preparing phone lists and clustering questions
+2 silence phones saved to: data/local/dict/silence_phones.txt
+1 optional silence saved to: data/local/dict/optional_silence.txt
+40 non-silence phones saved to: data/local/dict/nonsilence_phones.txt
+3 extra triphone	clustering-related questions saved to: data/local/dict/extra_questions.txt
+Lexicon text file saved as: data/local/dict/lexicon.txt
+[33;40m ..... [END] 언어 모델 생성 : dictionary[0m

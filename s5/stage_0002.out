@@ -1,0 +1,127 @@
+[33;40m ..... [START] 데이터 준비[0m
+  003 106 f
+  003 107 m
+  003 108 f
+  003 109 f
+  003 110 m
+  003 111 f
+  003 113 f
+  003 114 m
+  003 115 f
+  003 116 m
+  003 117 m
+  003 119 f
+  003 120 m
+  003 122 f
+  003 123 f
+  003 124 m
+  003 125 m
+  003 127 f
+  003 128 f
+  003 129 m
+  003 130 f
+  003 131 f
+  003 133 m
+  003 134 f
+  003 135 m
+  003 136 f
+  003 138 f
+  003 139 m
+  003 140 f
+  003 141 f
+  003 142 f
+  003 143 m
+  003 144 m
+  003 145 m
+  003 146 f
+  003 148 m
+  003 150 m
+  003 151 f
+  003 152 f
+  003 153 f
+  003 154 m
+  003 155 f
+  003 156 f
+  003 157 m
+  003 158 f
+  003 159 f
+  003 160 f
+  003 161 m
+  003 162 m
+  003 163 m
+  003 164 f
+  003 165 m
+  003 166 f
+  003 167 m
+  003 168 f
+  003 169 f
+  003 170 m
+  003 171 f
+  003 172 m
+  003 173 f
+  003 174 m
+  003 175 f
+  003 176 m
+  003 177 f
+  003 178 m
+  003 179 f
+  003 180 f
+  003 181 f
+  003 182 m
+  003 183 f
+  003 184 m
+  003 185 m
+  003 186 f
+  003 187 m
+  003 188 f
+  003 189 f
+  003 190 m
+  003 191 f
+  003 192 m
+  003 193 f
+  003 194 f
+  003 195 f
+  003 196 f
+  003 197 m
+  003 198 m
+  003 199 f
+  003 200 m
+  003 201 f
+  003 202 f
+  003 203 f
+  003 204 f
+  003 205 f
+  003 206 f
+  003 207 m
+  003 208 m
+  003 209 f
+  003 210 f
+  003 211 f
+  003 212 f
+  003 213 f
+  003 214 f
+  003 215 f
+  003 216 m
+  003 217 f
+  003 218 f
+utils/data/get_utt2dur.sh: segments file does not exist so getting durations from wave files
+utils/data/get_utt2dur.sh: could not get utterance lengths from sphere-file headers, using wav-to-duration
+utils/data/get_utt2dur.sh: computed data/train_data_01/utt2dur
+utils/validate_data_dir.sh: Successfully validated data-directory data/train_data_01
+local/data_prep.sh: successfully prepared data in data/train_data_01
+  003 104 m
+  003 105 f
+  003 112 m
+  003 118 m
+  003 121 f
+  003 126 f
+  003 132 f
+  003 137 f
+  003 147 f
+  003 149 m
+utils/data/get_utt2dur.sh: segments file does not exist so getting durations from wave files
+utils/data/get_utt2dur.sh: could not get utterance lengths from sphere-file headers, using wav-to-duration
+utils/data/get_utt2dur.sh: computed data/test_data_01/utt2dur
+utils/validate_data_dir.sh: Successfully validated data-directory data/test_data_01
+local/data_prep.sh: successfully prepared data in data/test_data_01
+[33;40m ..... [END] 데이터 준비[0m

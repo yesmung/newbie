@@ -1,0 +1,20 @@
+[33;40m ..... [START] 필수 데이터 생성 : lang 파트[0m
+Re-segment transcripts: data/train_data_01/text --------------------------------------------
+Loading model from 'data/local/lm/zeroth_morfessor.seg'...
+Done.
+No training data files specified.
+Segmenting test data...
+Reading corpus from '-'...
+................................Done.
+
+Done.
+Re-segment transcripts: data/test_data_01/text --------------------------------------------
+Loading model from 'data/local/lm/zeroth_morfessor.seg'...
+Done.
+No training data files specified.
+Segmenting test data...
+Reading corpus from '-'...
+Done.
+
+Done.
+[33;40m ..... [END] 필수 데이터 생성 : lang 파트[0m

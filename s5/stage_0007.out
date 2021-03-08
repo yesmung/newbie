@@ -1,0 +1,14 @@
+[33;40m ..... [START] Train monophone [0m
+steps/train_mono.sh --nj 2 --cmd run.pl --mem 2G data/train_data_01 data/lang_final exp/mono0a_gmm_ms
+feats add-deltas ark:- ark:-
+feat-to-dim scp:data/train_data_01/split2/1/feats.scp - 
+13
+feat-to-dim 'ark,s,cs:apply-cmvn --utt2spk=ark:data/train_data_01/split2/1/utt2spk scp:data/train_data_01/split2/1/cmvn.scp scp:data/train_data_01/split2/1/feats.scp ark:- | add-deltas ark:- ark:- |' - 
+add-deltas ark:- ark:- 
+apply-cmvn --utt2spk=ark:data/train_data_01/split2/1/utt2spk scp:data/train_data_01/split2/1/cmvn.scp scp:data/train_data_01/split2/1/feats.scp ark:- 
+WARNING (feat-to-dim[5.5.821-811bd2]:Close():kaldi-io.cc:515) Pipe apply-cmvn --utt2spk=ark:data/train_data_01/split2/1/utt2spk scp:data/train_data_01/split2/1/cmvn.scp scp:data/train_data_01/split2/1/feats.scp ark:- | add-deltas ark:- ark:- | had nonzero return status 36096
+steps/train_mono.sh: Initializing monophone system.
+steps/train_mono.sh: Compiling training graphs
+steps/train_mono.sh: Aligning data equally (pass 0)
+steps/train_mono.sh: Pass 1
+steps/train_mono.sh: Aligning data
